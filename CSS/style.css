@@ -868,6 +868,11 @@
     color: var(--white);
     line-height: 1;
     margin-bottom: 14px;
+    transition: color 0.3s ease;
+  }
+
+  .service-card:hover .service-name {
+    color: var(--gold);
   }
 
   .service-desc {
@@ -994,11 +999,60 @@
     position: relative;
     cursor: pointer;
     transition: transform 0.35s ease, box-shadow 0.35s ease;
+    z-index: 1;
   }
 
   .project-card:hover {
     transform: translateY(-6px);
     box-shadow: 0 24px 48px rgba(0,0,0,0.5);
+  }
+
+  .project-border-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: inherit;
+    overflow: hidden;
+    padding: 3.5px; /* Bold neon border thickness */
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    filter: drop-shadow(0 0 6px rgba(0, 243, 255, 0.85)); /* High-contrast electric cyan glow */
+  }
+
+  .project-card:hover .project-border-glow {
+    opacity: 1;
+  }
+
+  .project-border-glow::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+      from 180deg, /* Starts at the bottom of the card */
+      transparent 60%,
+      #0055ff 78%,
+      #00f3ff 92%,
+      #ffffff 98%,
+      #00f3ff 100%
+    );
+    animation: rotateProjectBorder 2s linear infinite; /* Clockwise rotation */
+  }
+
+  @keyframes rotateProjectBorder {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 
   .project-img {
@@ -1913,6 +1967,10 @@
       box-shadow: none !important;
     }
     
+    .project-border-glow {
+      display: none !important; /* Turn off the neon borders on mobile for performance */
+    }
+    
     .service-card {
       height: 380px !important;
     }
@@ -1920,5 +1978,226 @@
     .project-card {
       margin-bottom: 0 !important;
     }
+  }
+
+  /* ── PROJECTS PAGE STYLES ── */
+  .projects-hero {
+    position: relative;
+    width: 100%;
+    height: 40vh;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    background: #0d0d0d;
+    padding-top: var(--nav-h);
+  }
+
+  .projects-hero-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    opacity: 0.35; /* Dark cinematic blend */
+    filter: saturate(0.8);
+  }
+
+  .projects-hero .hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5%;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+  }
+
+  .projects-hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(38px, 6vw, 62px); /* Reduced size to not overshadow navbar */
+    color: var(--white);
+    letter-spacing: 2px;
+    line-height: 1.1;
+    margin-top: 10px;
+    text-transform: uppercase;
+  }
+
+  .projects-hero-title span {
+    color: var(--gold);
+  }
+
+  /* Dropdown Filter Bar */
+  .filter-section {
+    background: #0a0a0a;
+    padding: 35px 5%;
+    border-bottom: 1px solid rgba(212, 160, 23, 0.1);
+    position: relative;
+    z-index: 5;
+  }
+
+  .filter-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .filter-label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(245, 245, 240, 0.55);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .filter-controls {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .custom-select-wrapper {
+    position: relative;
+    display: inline-block;
+  }
+
+  .filter-dropdown {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(212, 160, 23, 0.35); /* Premium gold border */
+    border-radius: 4px;
+    padding: 11px 48px 11px 18px; /* Large right padding to clear arrow */
+    color: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    min-width: 200px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  .filter-dropdown:focus, .filter-dropdown:hover {
+    border-color: var(--gold);
+    background: rgba(255, 255, 255, 0.07);
+    box-shadow: 0 0 15px rgba(212, 160, 23, 0.25);
+  }
+
+  .select-arrow {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    color: var(--gold);
+    pointer-events: none;
+    transition: transform 0.3s ease;
+  }
+
+  .filter-dropdown:focus + .select-arrow {
+    transform: translateY(-50%) rotate(180deg);
+  }
+
+  .filter-dropdown option {
+    background: #141414;
+    color: var(--cream);
+    padding: 12px;
+  }
+
+  .clear-filter-link {
+    background: transparent;
+    border: 1px solid rgba(212, 160, 23, 0.45); /* Matching gold border */
+    border-radius: 4px;
+    padding: 11px 24px;
+    color: var(--gold); /* Gold text */
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    text-decoration: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  .clear-filter-link:hover {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--black); /* Inverse text color on hover */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 160, 23, 0.3);
+  }
+
+  .clear-filter-link svg {
+    margin-left: 14px; /* Give chevron space from text */
+    margin-right: 2px; /* Prevent it from touching the right border */
+    width: 14px;
+    height: 14px;
+    transition: transform 0.25s ease;
+    stroke-width: 2.5px;
+  }
+
+  .clear-filter-link:hover svg {
+    transform: translateX(4px); /* Smooth slide */
+  }
+
+  /* Responsive styles for filters */
+  @media (max-width: 768px) {
+    .filter-container {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .filter-controls {
+      width: 100%;
+      gap: 12px;
+    }
+    .custom-select-wrapper {
+      flex: 1;
+    }
+    .filter-dropdown {
+      width: 100%;
+      min-width: unset;
+    }
+    .clear-filter-link {
+      flex-shrink: 0;
+    }
+  }
+
+  .projects-page-content {
+    background: #0d0d0d;
+    padding: 40px 5% 100px;
+  }
+
+  .projects-page-content .projects-grid {
+    margin-top: 0;
+  }
+
+  /* Fade animation classes for JavaScript filter */
+  .project-card.filter-hide {
+    opacity: 0 !important;
+    transform: scale(0.92) translateY(12px) !important;
+    pointer-events: none !important;
+    transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.35s ease;
+  }
+
+  .project-card.filter-show {
+    opacity: 1 !important;
+    transform: scale(1) translateY(0) !important;
+    pointer-events: auto !important;
+    transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.35s ease;
   }
 

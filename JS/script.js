@@ -14,40 +14,49 @@ const nav = document.getElementById('mainNav');
 
 
   // ── EmailJS init (replace with your actual Public Key) ──
-  emailjs.init('YOUR_PUBLIC_KEY');
+  if (typeof emailjs !== 'undefined') {
+    emailjs.init('YOUR_PUBLIC_KEY');
+  }
 
-  document.getElementById('contactForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const btn    = document.getElementById('formSubmit');
-    const status = document.getElementById('formStatus');
-    btn.disabled = true;
-    btn.textContent = 'Sending…';
-    status.className = 'form-status';
-    status.textContent = '';
+  const contactForm = document.getElementById('contactForm');
+  if (contactForm && typeof emailjs !== 'undefined') {
+    contactForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const btn    = document.getElementById('formSubmit');
+      const status = document.getElementById('formStatus');
+      btn.disabled = true;
+      btn.textContent = 'Sending…';
+      status.className = 'form-status';
+      status.textContent = '';
 
-    // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your EmailJS values
-    emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
-      .then(() => {
-        status.textContent = '✓ Message sent! We will be in touch within 24 hours.';
-        status.className = 'form-status success';
-        this.reset();
-      })
-      .catch(() => {
-        status.textContent = '✗ Something went wrong. Please try WhatsApp or email us directly.';
-        status.className = 'form-status error';
-      })
-      .finally(() => {
-        btn.disabled = false;
-        btn.innerHTML = 'Send Message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
-      });
-  });
+      // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your EmailJS values
+      emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
+        .then(() => {
+          status.textContent = '✓ Message sent! We will be in touch within 24 hours.';
+          status.className = 'form-status success';
+          this.reset();
+        })
+        .catch(() => {
+          status.textContent = '✗ Something went wrong. Please try WhatsApp or email us directly.';
+          status.className = 'form-status error';
+        })
+        .finally(() => {
+          btn.disabled = false;
+          btn.innerHTML = 'Send Message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+        });
+    });
+  }
 
   // ── Testimonials slider ──
   const slides = document.querySelectorAll('.testi-slide');
   const dots   = document.querySelectorAll('.testi-dot');
+  const testiNext = document.getElementById('testiNext');
+  const testiPrev = document.getElementById('testiPrev');
+  const testiSlider = document.getElementById('testiSlider');
   let current  = 0;
 
   function goTo(n) {
+    if (slides.length === 0 || dots.length === 0) return;
     slides[current].classList.remove('active');
     dots[current].classList.remove('active');
     current = (n + slides.length) % slides.length;
@@ -55,16 +64,22 @@ const nav = document.getElementById('mainNav');
     dots[current].classList.add('active');
   }
 
-  document.getElementById('testiNext').addEventListener('click', () => goTo(current + 1));
-  document.getElementById('testiPrev').addEventListener('click', () => goTo(current - 1));
+  if (testiNext) {
+    testiNext.addEventListener('click', () => goTo(current + 1));
+  }
+  if (testiPrev) {
+    testiPrev.addEventListener('click', () => goTo(current - 1));
+  }
   dots.forEach(d => d.addEventListener('click', () => goTo(+d.dataset.i)));
 
-  // Auto-advance every 6s
-  let autoPlay = setInterval(() => goTo(current + 1), 6000);
-  document.getElementById('testiSlider').addEventListener('mouseenter', () => clearInterval(autoPlay));
-  document.getElementById('testiSlider').addEventListener('mouseleave', () => {
-    autoPlay = setInterval(() => goTo(current + 1), 6000);
-  });
+  // Auto-advance every 6s if slider exists
+  if (testiSlider && slides.length > 0) {
+    let autoPlay = setInterval(() => goTo(current + 1), 6000);
+    testiSlider.addEventListener('mouseenter', () => clearInterval(autoPlay));
+    testiSlider.addEventListener('mouseleave', () => {
+      autoPlay = setInterval(() => goTo(current + 1), 6000);
+    });
+  }
 
   // ── Stats Counter Animation ──
   const stats = document.querySelectorAll('.stat-number');
@@ -224,3 +239,31 @@ const nav = document.getElementById('mainNav');
   setupCarousel('.services-carousel-wrapper', '.services-grid', 'servicesDots');
   setupCarousel('.projects-carousel-wrapper', '.projects-grid', 'projectsDots');
 
+  // ── 3D Card Tilt Effect (Desktop Only) ──
+  if (window.innerWidth > 768) {
+    const tiltCards = document.querySelectorAll('.project-card');
+    tiltCards.forEach(card => {
+      card.style.willChange = 'transform, box-shadow';
+
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const width = rect.width;
+        const height = rect.height;
+        
+        // Calculate tilt angles (subtle -8 to 8 deg range)
+        const rotateX = ((height / 2 - y) / (height / 2)) * 8;
+        const rotateY = ((x - width / 2) / (width / 2)) * 8;
+        
+        card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px) scale(1.02)`;
+        card.style.transition = 'transform 0.1s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.35s ease';
+      });
+
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = '';
+        card.style.transition = 'transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.35s ease';
+      });
+    });
+  }
