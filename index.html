@@ -105,7 +105,8 @@
     </a>
   </div>
 
-  <div class="services-grid">
+  <div class="services-carousel-wrapper">
+    <div class="services-grid">
 
     <!-- 01 Residential -->
     <div class="service-card">
@@ -186,8 +187,8 @@
       </div>
       <span class="service-tag">Bespoke · Turnkey · Premium</span>
     </div>
-
   </div>
+  <div class="carousel-dots services-dots" id="servicesDots"></div>
 </section>
 
 
@@ -205,7 +206,8 @@
     <span class="projects-count">320+</span>
   </div>
 
-  <div class="projects-grid">
+  <div class="projects-carousel-wrapper">
+    <div class="projects-grid">
 
     <!-- Project 1 -->
     <div class="project-card">
@@ -422,8 +424,8 @@
         </div>
       </div>
     </div>
-
   </div>
+  <div class="carousel-dots projects-dots" id="projectsDots"></div>
 
   <div class="projects-bottom">
     <a href="#contact" class="btn-outline-gold">
@@ -434,8 +436,43 @@
 
 </section>
 
-<!-- ── TESTIMONIALS SECTION ── -->
+<!-- ── VIDEO STORY SECTION ── -->
+<section class="video-story">
+  <video id="storyVideo" class="video-story-bg" autoplay muted loop playsinline>
+    <source src="story.mp4" type="video/mp4"/>
+    Your browser does not support the video tag.
+  </video>
+  <button id="soundToggle" class="sound-toggle-btn" aria-label="Toggle Sound">
+    <!-- Icon Off (Muted by default) -->
+    <svg class="sound-icon sound-icon-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <line x1="23" y1="9" x2="17" y2="15"></line>
+      <line x1="17" y1="9" x2="23" y2="15"></line>
+    </svg>
+    <!-- Icon On (Hidden by default) -->
+    <svg class="sound-icon sound-icon-on" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+      <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+    </svg>
+  </button>
+</section>
+
 <section class="testimonials" id="testimonials">
+  <!-- Trust Badge (Top Left Corner) -->
+  <div class="trust-badge">
+    <div class="avatar-stack">
+      <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80" alt="Client 1" class="trust-avatar"/>
+      <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80" alt="Client 2" class="trust-avatar"/>
+      <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80" alt="Client 3" class="trust-avatar"/>
+      <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=100&q=80" alt="Client 4" class="trust-avatar"/>
+      <div class="trust-avatar-more">+180</div>
+    </div>
+    <div class="trust-text">
+      <span class="trust-label">Trusted by</span>
+      <span class="trust-val">world leading companies</span>
+    </div>
+  </div>
+
   <div class="testimonials-inner">
     <div class="section-eyebrow">
       <div class="eyebrow-line"></div>
@@ -785,29 +822,22 @@
   </div>
 </footer>
 
-<!-- ── WHATSAPP FLOATING BUTTON ── -->
-<a class="wa-btn" href="https://wa.me/919999999999?text=Hi%20Erix%2C%20I%27d%20like%20to%20discuss%20a%20project."
+<!-- ── WHATSAPP FLOATING WIDGET ── -->
+<a class="wa-widget" href="https://wa.me/919999999999?text=Hi%20Erix%2C%20I%27d%20like%20to%20discuss%20a%20project."
    target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15
-             -.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075
-             -.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059
-             -.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52
-             .149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52
-             -.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51
-             -.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372
-             -.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074
-             .149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625
-             .712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413
-             .248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-    <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.492
-             a.75.75 0 0 0 .921.921l5.64-1.471A11.945 11.945 0 0 0 12 24
-             c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22
-             c-1.848 0-3.592-.476-5.11-1.314l-.368-.213-3.812.994.994-3.812
-             -.213-.368A9.956 9.956 0 0 1 2 12C2 6.477 6.477 2 12 2
-             s10 4.477 10 10-4.477 10-10 10z"/>
-  </svg>
-  <span class="wa-tooltip">Chat with us on WhatsApp</span>
+  <div class="wa-widget-img-container">
+    <img src="./chat_builder.png" alt="Erix Support" class="wa-widget-img"/>
+  </div>
+  <div class="wa-widget-text">
+    <span class="wa-widget-title">Do You Have A Project To Discuss?</span>
+    <span class="wa-widget-subtitle">Let's Chat.</span>
+  </div>
+  <div class="wa-widget-btn">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.492a.75.75 0 00.921.921l5.64-1.471A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.592-.476-5.11-1.314l-.368-.213-3.812.994.994-3.812-.213-.368A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+    </svg>
+  </div>
 </a>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="./JS/script.js"></script>

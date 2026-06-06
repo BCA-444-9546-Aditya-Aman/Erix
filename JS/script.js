@@ -126,3 +126,101 @@ const nav = document.getElementById('mainNav');
     observer.observe(stat);
   });
 
+  // ── Video Sound Toggle ──
+  const soundToggle = document.getElementById('soundToggle');
+  const storyVideo = document.getElementById('storyVideo');
+  if (soundToggle && storyVideo) {
+    const iconOn = soundToggle.querySelector('.sound-icon-on');
+    const iconOff = soundToggle.querySelector('.sound-icon-off');
+
+    soundToggle.addEventListener('click', () => {
+      if (storyVideo.muted) {
+        storyVideo.muted = false;
+        iconOff.style.display = 'none';
+        iconOn.style.display = 'block';
+      } else {
+        storyVideo.muted = true;
+        iconOff.style.display = 'block';
+        iconOn.style.display = 'none';
+      }
+    });
+  }
+
+  // ── Mobile Carousels (Services & Projects) ──
+  const setupCarousel = (wrapperClass, gridClass, dotsId) => {
+    const wrapper = document.querySelector(wrapperClass);
+    const grid = document.querySelector(gridClass);
+    const dotsContainer = document.getElementById(dotsId);
+
+    if (!wrapper || !grid || !dotsContainer) return;
+
+    const cards = grid.children;
+    const totalCards = cards.length;
+    let currentIndex = 0;
+
+    // Create dots
+    for (let i = 0; i < totalCards; i++) {
+      const dot = document.createElement('button');
+      dot.classList.add('carousel-dot');
+      if (i === 0) dot.classList.add('active');
+      dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
+      dot.addEventListener('click', () => {
+        goToSlide(i);
+      });
+      dotsContainer.appendChild(dot);
+    }
+
+    const updateCarousel = () => {
+      // Only apply transform if screen is mobile breakpoint
+      if (window.innerWidth <= 768) {
+        grid.style.transform = `translateX(-${currentIndex * 100}%)`;
+      } else {
+        grid.style.transform = '';
+      }
+
+      // Update dots
+      const dots = dotsContainer.querySelectorAll('.carousel-dot');
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentIndex);
+      });
+    };
+
+    const goToSlide = (index) => {
+      currentIndex = index;
+      updateCarousel();
+    };
+
+    // Swipe handlers
+    let startX = 0;
+    let endX = 0;
+
+    wrapper.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+    }, { passive: true });
+
+    wrapper.addEventListener('touchend', (e) => {
+      endX = e.changedTouches[0].clientX;
+      const diffX = startX - endX;
+
+      if (Math.abs(diffX) > 50) { // Swipe threshold
+        if (diffX > 0 && currentIndex < totalCards - 1) {
+          // Swiped left -> next slide
+          currentIndex++;
+        } else if (diffX < 0 && currentIndex > 0) {
+          // Swiped right -> prev slide
+          currentIndex--;
+        }
+        updateCarousel();
+      }
+    }, { passive: true });
+
+    // Handle resize
+    window.addEventListener('resize', () => {
+      updateCarousel();
+    });
+  };
+
+  // Run carousel setup
+  setupCarousel('.services-carousel-wrapper', '.services-grid', 'servicesDots');
+  setupCarousel('.projects-carousel-wrapper', '.projects-grid', 'projectsDots');
+
