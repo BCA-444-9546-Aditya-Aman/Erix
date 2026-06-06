@@ -3141,4 +3141,204 @@
     color: var(--gold);
   }
 
+  /* ── POPUP MODAL STYLES ── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(13, 13, 13, 0.85);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    padding: 20px;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal-content {
+    background: var(--cream);
+    width: 100%;
+    max-width: 480px;
+    border-radius: 4px;
+    position: relative;
+    padding: 28px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    border: 1px solid rgba(212, 160, 23, 0.15);
+    transform: translateY(30px);
+    transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .modal-overlay.active .modal-content {
+    transform: translateY(0);
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    border: none;
+    font-size: 32px;
+    line-height: 1;
+    color: rgba(13, 13, 13, 0.4);
+    cursor: pointer;
+    transition: color 0.25s ease;
+  }
+
+  .modal-close:hover {
+    color: var(--gold);
+  }
+
+  .modal-header {
+    margin-bottom: 15px;
+  }
+
+  .modal-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    color: var(--black);
+    letter-spacing: 1.5px;
+    line-height: 1.1;
+    text-transform: uppercase;
+    margin-top: 5px;
+  }
+
+  .modal-title span {
+    color: var(--gold);
+  }
+
+  #popupContactForm {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  #popupContactForm .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  #popupContactForm .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  #popupContactForm label {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: rgba(13, 13, 13, 0.65);
+  }
+
+  #popupContactForm input,
+  #popupContactForm select,
+  #popupContactForm textarea {
+    background: rgba(13, 13, 13, 0.03);
+    border: 1px solid rgba(13, 13, 13, 0.12);
+    border-radius: 2px;
+    padding: 10px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--black);
+    outline: none;
+    transition: border-color 0.25s, background-color 0.25s;
+  }
+
+  #popupContactForm select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230d0d0d' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  #popupContactForm select option {
+    background: var(--cream);
+    color: var(--black);
+  }
+
+  #popupContactForm input:focus,
+  #popupContactForm select:focus,
+  #popupContactForm textarea:focus {
+    border-color: var(--gold);
+    background-color: rgba(212, 160, 23, 0.02);
+  }
+
+  #popupContactForm textarea {
+    height: 80px;
+    resize: none;
+  }
+
+  #popupContactForm .form-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--gold);
+    color: var(--black);
+    border: none;
+    padding: 14px 28px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background-color 0.25s, box-shadow 0.25s;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  #popupContactForm .form-submit:hover {
+    background: var(--gold-lt);
+    box-shadow: 0 4px 15px rgba(212, 160, 23, 0.25);
+  }
+
+  #popupContactForm .form-submit svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  #popupContactForm .form-status {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    margin-top: 10px;
+    text-align: center;
+  }
+
+  #popupContactForm .form-status.success {
+    color: #1b7e34;
+  }
+
+  #popupContactForm .form-status.error {
+    color: #c0392b;
+  }
+
+  @media (max-width: 600px) {
+    .modal-content {
+      padding: 30px 20px;
+    }
+    #popupContactForm .form-row {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+    .modal-title {
+      font-size: 28px;
+    }
+  }
+
 

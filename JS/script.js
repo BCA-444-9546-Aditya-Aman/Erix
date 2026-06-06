@@ -20,13 +20,37 @@ if (nav) {
   });
 
 
-  // ── EmailJS init (replace with your actual Public Key) ──
-  if (typeof emailjs !== 'undefined') {
-    emailjs.init('YOUR_PUBLIC_KEY');
+  // ── EmailJS Dynamic Loading & Init ──
+  const emailjsPublicKey = 'YOUR_PUBLIC_KEY'; // Replace with your actual Public Key
+  
+  function ensureEmailJSLoaded(callback) {
+    if (typeof emailjs !== 'undefined') {
+      if (callback) callback();
+      return;
+    }
+    
+    // Check if script tag is already being appended
+    let script = document.querySelector('script[src*="email.min.js"]');
+    if (!script) {
+      script = document.createElement('script');
+      script.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
+      script.async = true;
+      document.head.appendChild(script);
+    }
+    
+    script.addEventListener('load', () => {
+      if (typeof emailjs !== 'undefined') {
+        emailjs.init(emailjsPublicKey);
+        if (callback) callback();
+      }
+    });
   }
 
+  // Pre-load EmailJS
+  ensureEmailJSLoaded();
+
   const contactForm = document.getElementById('contactForm');
-  if (contactForm && typeof emailjs !== 'undefined') {
+  if (contactForm) {
     contactForm.addEventListener('submit', function(e) {
       e.preventDefault();
       const btn    = document.getElementById('formSubmit');
@@ -36,21 +60,31 @@ if (nav) {
       status.className = 'form-status';
       status.textContent = '';
 
-      // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your EmailJS values
-      emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
-        .then(() => {
-          status.textContent = '✓ Message sent! We will be in touch within 24 hours.';
-          status.className = 'form-status success';
-          this.reset();
-        })
-        .catch(() => {
-          status.textContent = '✗ Something went wrong. Please try WhatsApp or email us directly.';
+      ensureEmailJSLoaded(() => {
+        if (typeof emailjs === 'undefined') {
+          status.textContent = '✗ Email service is currently unavailable. Please try WhatsApp.';
           status.className = 'form-status error';
-        })
-        .finally(() => {
           btn.disabled = false;
           btn.innerHTML = 'Send Message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
-        });
+          return;
+        }
+
+        // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your EmailJS values
+        emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
+          .then(() => {
+            status.textContent = '✓ Message sent! We will be in touch within 24 hours.';
+            status.className = 'form-status success';
+            this.reset();
+          })
+          .catch(() => {
+            status.textContent = '✗ Something went wrong. Please try WhatsApp or email us directly.';
+            status.className = 'form-status error';
+          })
+          .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = 'Send Message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+          });
+      });
     });
   }
 
@@ -274,3 +308,150 @@ if (nav) {
       });
     });
   }
+
+  // ── POPUP ENQUIRY MODAL LOGIC ──
+  (function() {
+    const injectModal = () => {
+      if (document.getElementById('quoteModal')) return;
+
+      const modalHTML = `
+        <div id="quoteModal" class="modal-overlay">
+          <div class="modal-content">
+            <button class="modal-close" id="modalCloseBtn" aria-label="Close modal">&times;</button>
+            <div class="modal-header">
+              <div class="blog-details-eyebrow">
+                <div class="blog-details-eyebrow-line"></div>
+                <span class="blog-details-eyebrow-text">Request Quote</span>
+              </div>
+              <h2 class="modal-title">Start Your <span>Project</span></h2>
+            </div>
+            <form id="popupContactForm" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="pname">Full Name</label>
+                  <input type="text" id="pname" name="from_name" placeholder="John Doe" required/>
+                </div>
+                <div class="form-group">
+                  <label for="pphone">Phone Number</label>
+                  <input type="tel" id="pphone" name="phone" placeholder="+91 00000 00000" required/>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="pemail">Email Address</label>
+                <input type="email" id="pemail" name="from_email" placeholder="john@example.com" required/>
+              </div>
+              <div class="form-group">
+                <label for="pservice">Service Required</label>
+                <select id="pservice" name="service" required>
+                  <option value="" disabled selected>Select a service…</option>
+                  <option>Residential Construction</option>
+                  <option>Commercial Construction</option>
+                  <option>Renovation & Remodeling</option>
+                  <option>Interior Fit-Out</option>
+                  <option>Other / Not Sure Yet</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="pmessage">Your Message</label>
+                <textarea id="pmessage" name="message" placeholder="Tell us about your project — location, size, timeline…" required></textarea>
+              </div>
+              <button type="submit" class="form-submit" id="popupSubmitBtn">
+                Send Message
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+              </button>
+              <p class="form-status" id="popupStatusMsg"></p>
+            </form>
+          </div>
+        </div>
+      `;
+      document.body.insertAdjacentHTML('beforeend', modalHTML);
+
+      const modal = document.getElementById('quoteModal');
+      const closeBtn = document.getElementById('modalCloseBtn');
+      const popupForm = document.getElementById('popupContactForm');
+
+      const openModal = () => {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      };
+
+      const closeModal = () => {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      };
+
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+
+      document.querySelectorAll('.nav-cta').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          openModal();
+        });
+      });
+
+      const startProjBtn = document.querySelector('.services-cta-link');
+      if (startProjBtn) {
+        startProjBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          openModal();
+        });
+      }
+
+      const pageName = window.location.pathname.split('/').pop();
+      const isHomePage = pageName === 'index.html' || pageName === '' || window.location.pathname.endsWith('/');
+
+      if (isHomePage && !sessionStorage.getItem('popupShown')) {
+        setTimeout(() => {
+          openModal();
+          sessionStorage.setItem('popupShown', 'true');
+        }, 1500);
+      }
+
+      if (popupForm) {
+        popupForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const btn = document.getElementById('popupSubmitBtn');
+          const status = document.getElementById('popupStatusMsg');
+          btn.disabled = true;
+          btn.textContent = 'Sending…';
+          status.className = 'form-status';
+          status.textContent = '';
+
+          ensureEmailJSLoaded(() => {
+            if (typeof emailjs === 'undefined') {
+              status.textContent = '✗ Email service is currently unavailable. Please try WhatsApp.';
+              status.className = 'form-status error';
+              btn.disabled = false;
+              btn.innerHTML = 'Send Message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+              return;
+            }
+
+            emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
+              .then(() => {
+                status.textContent = '✓ Message sent! We will be in touch within 24 hours.';
+                status.className = 'form-status success';
+                this.reset();
+                setTimeout(closeModal, 2500);
+              })
+              .catch(() => {
+                status.textContent = '✗ Something went wrong. Please try WhatsApp or email us directly.';
+                status.className = 'form-status error';
+              })
+              .finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = 'Send Message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+              });
+          });
+        });
+      }
+    };
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', injectModal);
+    } else {
+      injectModal();
+    }
+  })();
