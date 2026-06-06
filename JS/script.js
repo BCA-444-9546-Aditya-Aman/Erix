@@ -407,7 +407,7 @@ if (nav) {
         setTimeout(() => {
           openModal();
           sessionStorage.setItem('popupShown', 'true');
-        }, 1500);
+        }, 60000);
       }
 
       if (popupForm) {
