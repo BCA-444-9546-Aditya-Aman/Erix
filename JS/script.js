@@ -1,7 +1,14 @@
 const nav = document.getElementById('mainNav');
-  window.addEventListener('scroll', () => {
-    nav.classList.toggle('scrolled', window.scrollY > 40);
-  });
+if (nav) {
+  const isLocked = nav.getAttribute('data-locked') === 'true';
+  if (!isLocked) {
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+  } else {
+    nav.classList.add('scrolled');
+  }
+}
 
   // Hamburger (mobile)
   document.getElementById('hamburger').addEventListener('click', function() {
