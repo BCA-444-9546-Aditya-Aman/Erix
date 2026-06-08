@@ -202,6 +202,22 @@ if (nav) {
     });
   }
 
+  // ── Video Full View / Fullscreen Toggle ──
+  const fullscreenToggle = document.getElementById('fullscreenToggle');
+  if (fullscreenToggle && storyVideo) {
+    fullscreenToggle.addEventListener('click', () => {
+      if (storyVideo.requestFullscreen) {
+        storyVideo.requestFullscreen();
+      } else if (storyVideo.webkitRequestFullscreen) { /* Safari / iOS */
+        storyVideo.webkitRequestFullscreen();
+      } else if (storyVideo.mozRequestFullScreen) { /* Firefox */
+        storyVideo.mozRequestFullScreen();
+      } else if (storyVideo.msRequestFullscreen) { /* IE/Edge */
+        storyVideo.msRequestFullscreen();
+      }
+    });
+  }
+
   // ── Mobile Carousels (Services & Projects) ──
   const setupCarousel = (wrapperClass, gridClass, dotsId) => {
     const wrapper = document.querySelector(wrapperClass);
@@ -279,6 +295,7 @@ if (nav) {
   // Run carousel setup
   setupCarousel('.services-carousel-wrapper', '.services-grid', 'servicesDots');
   setupCarousel('.projects-carousel-wrapper', '.projects-grid', 'projectsDots');
+  setupCarousel('.values-carousel-wrapper', '.values-grid', 'valuesDots');
 
   // ── 3D Card Tilt Effect (Desktop Only) ──
   if (window.innerWidth > 768) {
