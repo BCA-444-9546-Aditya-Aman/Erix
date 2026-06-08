@@ -92,6 +92,23 @@
 
   .nav-links a:hover { color: var(--gold); }
 
+  .nav-links a.active {
+    color: var(--gold) !important;
+    position: relative;
+  }
+
+  .nav-links a.active::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--gold);
+    border-radius: 1px;
+    transition: all 0.3s;
+  }
+
   .nav-cta {
     font-family: 'Barlow Condensed', sans-serif;
     font-size: 13px;
@@ -2733,10 +2750,30 @@
 
   .about-page {
     padding-top: var(--nav-h);
-    background: #EBE8DF;
+    background: var(--black);
   }
 
-  .services-page {
+
+  /* About Page Hero dark mode override */
+  .about-page .service-hero {
+    background: var(--black);
+    border-bottom: 1px solid rgba(212, 160, 23, 0.15);
+  }
+  .about-page .service-hero-eyebrow-text {
+    color: rgba(245, 245, 240, 0.6);
+  }
+  .about-page .service-hero-eyebrow-line {
+    background: var(--gold);
+  }
+  .about-page .service-hero-title {
+    color: var(--white);
+  }
+  .about-page .service-hero-title span {
+    color: var(--gold);
+  }
+
+  .services-page,
+  .contact-page {
     padding-top: var(--nav-h);
     background: #0d0d0d;
     color: var(--cream);
@@ -2744,13 +2781,13 @@
 
   .service-hero {
     background: linear-gradient(135deg, #FAF6EE 0%, #EFE5D3 100%);
-    padding: 40px 5% 35px;
+    padding: 25px 5% 20px;
     border-bottom: 1px solid rgba(140, 98, 57, 0.15);
     position: relative;
     text-align: left;
     display: flex;
     align-items: center;
-    min-height: 140px;
+    min-height: 100px;
   }
 
   .service-hero-content {
@@ -2763,7 +2800,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 14px;
+    margin-bottom: 6px;
   }
 
   .service-hero-eyebrow-line {
@@ -2783,7 +2820,7 @@
 
   .service-hero-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(38px, 6vw, 62px);
+    font-size: clamp(28px, 4.5vw, 44px);
     color: #1a1a1a;
     letter-spacing: 2px;
     line-height: 1.1;
@@ -2889,13 +2926,13 @@
   /* Blogs Hero Section styling */
   .blogs-hero {
     background: linear-gradient(135deg, #FAF6EE 0%, #EFE5D3 100%);
-    padding: 40px 5% 35px;
+    padding: 25px 5% 20px;
     border-bottom: 1px solid rgba(140, 98, 57, 0.15);
     position: relative;
     text-align: left;
     display: flex;
     align-items: center;
-    min-height: 140px;
+    min-height: 100px;
   }
 
   .blogs-hero-content {
@@ -2908,7 +2945,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 14px;
+    margin-bottom: 6px;
   }
 
   .blogs-hero-eyebrow-line {
@@ -2928,7 +2965,7 @@
 
   .blogs-hero-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(38px, 6vw, 62px);
+    font-size: clamp(28px, 4.5vw, 44px);
     color: #1a1a1a;
     letter-spacing: 2px;
     line-height: 1.1;
@@ -3141,15 +3178,124 @@
   }
 
   .blog-details-content-container {
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 40px 5% 100px;
   }
 
   .blog-details-header {
-    margin-bottom: 40px;
+    max-width: 900px;
+    margin: 0 auto 40px;
     border-bottom: 1px solid rgba(13, 13, 13, 0.1);
     padding-bottom: 30px;
+  }
+
+  .blog-details-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    align-items: start;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .blog-details-sidebar {
+    background: #ffffff;
+    border: 1px solid rgba(13, 13, 13, 0.08);
+    border-radius: 4px;
+    padding: 24px;
+    position: sticky;
+    top: 100px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  }
+
+  .blog-details-sidebar h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 1px;
+    color: var(--black);
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--gold);
+    padding-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .recent-blogs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .recent-blog-card {
+    display: flex;
+    gap: 15px;
+    text-decoration: none;
+    color: var(--black);
+    transition: transform 0.25s ease;
+    align-items: center;
+  }
+
+  .recent-blog-card:hover {
+    transform: translateX(4px);
+  }
+
+  .recent-blog-img {
+    width: 64px;
+    height: 64px;
+    border-radius: 4px;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 1px solid rgba(13, 13, 13, 0.05);
+  }
+
+  .recent-blog-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .recent-blog-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .recent-blog-date {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    color: rgba(13, 13, 13, 0.45);
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  .recent-blog-card h4 {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--black);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.2s ease;
+  }
+
+  .recent-blog-card:hover h4 {
+    color: var(--gold);
+  }
+
+  @media (min-width: 901px) {
+    .blog-details-layout {
+      grid-template-columns: 1fr 340px;
+      gap: 60px;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .blog-details-sidebar {
+      display: none;
+    }
   }
 
   .blog-details-eyebrow {
