@@ -1,33 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Erix Construction</title>
-<link rel="stylesheet" href="./assets/css/style.css"/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=Barlow+Condensed:wght@300;400;500&display=swap" rel="stylesheet"/>
-</head>
-<body>
+<?php
+$pageTitle = "Erix Construction - Engineering Excellence";
+$pathPrefix = "./";
+$currentPage = "home";
+include 'pages/includes/header.php';
 
-<!-- ── NAVIGATION ── -->
-<!-- ── NAVIGATION ── -->
-<nav id="mainNav">
-  <a href="index.html" class="nav-logo">
-    <span class="logo-e">E</span><span class="logo-rix">RIX</span>
-    <span class="logo-dot"></span>
-  </a>
-  <ul class="nav-links">
-    <li><a href="./pages/about.html">About</a></li>
-    <li><a href="./pages/services.html">Services</a></li>
-    <li><a href="./pages/projects.html" class="nav-projects-link">Projects</a></li>
-    <li><a href="./pages/blogs.html">Blogs</a></li>
-    <li><a href="./pages/contact.html">Contact</a></li>
-    <li><a href="#contact" class="nav-cta">Get a Quote</a></li>
-  </ul>
-  <div class="hamburger" id="hamburger">
-    <span></span><span></span><span></span>
-  </div>
-</nav>
+// Load projects from database for the showcase carousel
+require_once 'pages/admin/db.php';
+try {
+    $featuredProjects = $pdo->query("SELECT * FROM projects ORDER BY created_at DESC LIMIT 6")->fetchAll();
+} catch (\PDOException $e) {
+    $featuredProjects = [];
+}
+
+// Load featured services
+try {
+    $featuredServices = $pdo->query("SELECT * FROM services WHERE is_featured = 1 ORDER BY created_at ASC LIMIT 4")->fetchAll();
+} catch (\PDOException $e) {
+    $featuredServices = [];
+}
+?>
 
 
 <!-- ── HERO ── -->
@@ -55,7 +46,7 @@
     </p>
 
     <div class="hero-actions">
-      <a href="./pages/projects.html" class="btn-primary">View Our Work</a>
+      <a href="./pages/users/projects.php" class="btn-primary">View Our Work</a>
       <a href="#contact"  class="btn-ghost">Get a Quote</a>
     </div>
   </div>
@@ -110,89 +101,46 @@
   <div class="services-carousel-wrapper">
     <div class="services-grid">
 
-    <!-- 01 Residential -->
-    <a href="./pages/service-details.html" class="service-card">
-      <div class="service-bg">
-        <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Residential Construction" loading="lazy"/>
-        <div class="service-bg-overlay"></div>
-      </div>
-      <div class="service-arrow">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </div>
-      <div class="service-card-inner">
-        <span class="service-number">01</span>
-        <div class="service-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        </div>
-        <h3 class="service-name">Residential<br/>Construction</h3>
-        <p class="service-desc">Custom homes, villas, and apartments designed to reflect your lifestyle — built with structural precision and premium finishes that endure.</p>
-      </div>
-      <span class="service-tag">Homes · Villas · Apartments</span>
-    </a>
-
-    <!-- 02 Commercial -->
-    <a href="./pages/service-details.html" class="service-card">
-      <div class="service-bg">
-        <img src="https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80" alt="Commercial Construction" loading="lazy"/>
-        <div class="service-bg-overlay"></div>
-      </div>
-      <div class="service-arrow">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </div>
-      <div class="service-card-inner">
-        <span class="service-number">02</span>
-        <div class="service-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
-        </div>
-        <h3 class="service-name">Commercial<br/>Construction</h3>
-        <p class="service-desc">Office complexes, retail spaces, and mixed-use developments built to scale — delivering functional, future-ready commercial environments.</p>
-      </div>
-      <span class="service-tag">Offices · Retail · Mixed-Use</span>
-    </a>
-
-    <!-- 03 Renovation -->
-    <a href="./pages/service-details.html" class="service-card">
-      <div class="service-bg">
-        <img src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&q=80" alt="Renovation" loading="lazy"/>
-        <div class="service-bg-overlay"></div>
-      </div>
-      <div class="service-arrow">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </div>
-      <div class="service-card-inner">
-        <span class="service-number">03</span>
-        <div class="service-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-        </div>
-        <h3 class="service-name">Renovation &<br/>Remodeling</h3>
-        <p class="service-desc">Breathing new life into existing structures — from complete gut renovations to targeted upgrades that modernise your space without disruption.</p>
-      </div>
-      <span class="service-tag">Interiors · Structural · Extensions</span>
-    </a>
-
-    <!-- 04 Interior Fit-Out -->
-    <a href="./pages/service-details.html" class="service-card">
-      <div class="service-bg">
-        <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&q=80" alt="Interior Fit-Out" loading="lazy"/>
-        <div class="service-bg-overlay"></div>
-      </div>
-      <div class="service-arrow">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-      </div>
-      <div class="service-card-inner">
-        <span class="service-number">04</span>
-        <div class="service-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22V12m0 0l-3-3m3 3l3-3M3 9l1.5 1.5M3 9V6l3-3h9l3 3v3M21 9l-1.5 1.5M3 9h18"/></svg>
-        </div>
-        <h3 class="service-name">Interior<br/>Fit-Out</h3>
-        <p class="service-desc">Turnkey interior solutions that combine aesthetics with functionality — bespoke joinery, premium finishes, and thoughtful spatial planning.</p>
-      </div>
-      <span class="service-tag">Bespoke · Turnkey · Premium</span>
-    </a>
+    <?php if (count($featuredServices) > 0): ?>
+      <?php foreach ($featuredServices as $index => $srv): ?>
+        <?php 
+          $num = str_pad($index + 1, 2, '0', STR_PAD_LEFT);
+          $imgSrc = $srv['image_url'];
+          if ($imgSrc && strpos($imgSrc, 'http') !== 0) {
+              $imgSrc = $pathPrefix . $imgSrc;
+          }
+          if (!$imgSrc) $imgSrc = 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80'; // Fallback
+        ?>
+        <a href="./pages/users/service-details.php?id=<?php echo $srv['id']; ?>" class="service-card">
+          <div class="service-bg">
+            <img src="<?php echo htmlspecialchars($imgSrc); ?>" alt="<?php echo htmlspecialchars($srv['title']); ?>" loading="lazy"/>
+            <div class="service-bg-overlay"></div>
+          </div>
+          <div class="service-arrow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="service-card-inner">
+            <span class="service-number"><?php echo $num; ?></span>
+            <div class="service-icon">
+              <?php if (!empty($srv['icon_svg'])): ?>
+                <?php echo $srv['icon_svg']; ?>
+              <?php else: ?>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <?php endif; ?>
+            </div>
+            <h3 class="service-name"><?php echo str_replace(' ', '<br/>', htmlspecialchars($srv['title'])); ?></h3>
+            <p class="service-desc"><?php echo htmlspecialchars($srv['short_desc']); ?></p>
+          </div>
+          <span class="service-tag"><?php echo htmlspecialchars($srv['tags']); ?></span>
+        </a>
+      <?php endforeach; ?>
+    <?php else: ?>
+      <p style="color: rgba(245,245,240,0.6); font-size: 16px;">Services are currently being updated.</p>
+    <?php endif; ?>
   </div>
   <div class="carousel-dots services-dots" id="servicesDots"></div>
   <div class="services-bottom">
-    <a href="./pages/services.html" class="btn-outline-gold">
+    <a href="./pages/users/services.php" class="btn-outline-gold">
       View More
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
@@ -217,232 +165,75 @@
   <div class="projects-carousel-wrapper">
     <div class="projects-grid">
 
-    <!-- Project 1 -->
-    <a href="./pages/project-details.html" class="project-card">
-      <div class="project-border-glow"></div>
-      <div class="project-img">
-        <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=700&q=80" alt="Skyline Residences" loading="lazy"/>
-        <div class="project-img-overlay">
-          <span class="project-view-btn">View Project</span>
-        </div>
-        <span class="project-category-tag">Residential</span>
+    <?php if (count($featuredProjects) > 0): ?>
+      <?php foreach ($featuredProjects as $proj): ?>
+        <?php
+          $catLower = strtolower($proj['category']);
+          $imageSrc = $proj['image_url'];
+          if (strpos($imageSrc, 'http') !== 0) {
+              $imageSrc = $pathPrefix . $imageSrc;
+          }
+          $s1val = $proj['floors']; $s1key = 'Floors';
+          if ($s1val && preg_match('/^([\d\.★\w\+]+)\s+(.+)$/', $s1val, $m)) { $s1val = $m[1]; $s1key = $m[2]; }
+          $s3val = $proj['sq_ft']; $s3key = 'Sq. Ft.';
+          if ($s3val && preg_match('/^([\d\.★\w\+]+)\s+(.+)$/', $s3val, $m)) { $s3val = $m[1]; $s3key = $m[2]; }
+          $s2val = $proj['units']; $s2key = 'Units';
+          if ($s2val && preg_match('/^([\d\.★\w\+]+)\s+(.+)$/', $s2val, $m)) { $s2val = $m[1]; $s2key = $m[2]; }
+          $excerpt = $proj['description'];
+          if (strlen($excerpt) > 120) $excerpt = substr($excerpt, 0, 117) . '...';
+        ?>
+        <a href="./pages/users/project-details.php?id=<?php echo $proj['id']; ?>" class="project-card <?php echo htmlspecialchars($catLower); ?>" data-category="<?php echo htmlspecialchars($catLower); ?>">
+          <div class="project-border-glow"></div>
+          <div class="project-img">
+            <img src="<?php echo htmlspecialchars($imageSrc); ?>" alt="<?php echo htmlspecialchars($proj['name']); ?>" loading="lazy"/>
+            <div class="project-img-overlay">
+              <span class="project-view-btn">View Project</span>
+            </div>
+            <span class="project-category-tag"><?php echo htmlspecialchars($proj['category']); ?></span>
+          </div>
+          <div class="project-body">
+            <div class="project-meta">
+              <span class="project-location"><?php echo htmlspecialchars($proj['location']); ?></span>
+              <span class="project-year"><?php echo htmlspecialchars($proj['year']); ?></span>
+            </div>
+            <h3 class="project-name"><?php echo htmlspecialchars($proj['name']); ?></h3>
+            <p class="project-desc"><?php echo htmlspecialchars($excerpt); ?></p>
+            <div class="project-footer">
+              <?php if ($s1val): ?>
+              <div class="project-stat">
+                <span class="project-stat-val"><?php echo htmlspecialchars($s1val); ?></span>
+                <span class="project-stat-key"><?php echo htmlspecialchars($s1key); ?></span>
+              </div>
+              <?php endif; ?>
+              <?php if ($s3val): ?>
+              <div class="project-stat">
+                <span class="project-stat-val"><?php echo htmlspecialchars($s3val); ?></span>
+                <span class="project-stat-key"><?php echo htmlspecialchars($s3key); ?></span>
+              </div>
+              <?php endif; ?>
+              <?php if ($s2val): ?>
+              <div class="project-stat">
+                <span class="project-stat-val"><?php echo htmlspecialchars($s2val); ?></span>
+                <span class="project-stat-key"><?php echo htmlspecialchars($s2key); ?></span>
+              </div>
+              <?php endif; ?>
+              <span class="project-arrow-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </span>
+            </div>
+          </div>
+        </a>
+      <?php endforeach; ?>
+    <?php else: ?>
+      <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--cream);font-family:'DM Sans',sans-serif;">
+        No projects available at this time.
       </div>
-      <div class="project-body">
-        <div class="project-meta">
-          <span class="project-location">Mumbai, MH</span>
-          <span class="project-year">2024</span>
-        </div>
-        <h3 class="project-name">Skyline Residences</h3>
-        <p class="project-desc">A 24-storey luxury residential tower with 180 premium apartments, rooftop amenities, and panoramic city views.</p>
-        <div class="project-footer">
-          <div class="project-stat">
-            <span class="project-stat-val">24</span>
-            <span class="project-stat-key">Floors</span>
-          </div>
-          <div class="project-stat">
-            <span class="project-stat-val">180</span>
-            <span class="project-stat-key">Units</span>
-          </div>
-          <div class="project-stat">
-            <span class="project-stat-val">18M</span>
-            <span class="project-stat-key">Sq. Ft.</span>
-          </div>
-          <span class="project-arrow-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </span>
-        </div>
-      </div>
-    </a>
-
-    <!-- Project 2 -->
-    <a href="./pages/project-details.html" class="project-card">
-      <div class="project-border-glow"></div>
-      <div class="project-img">
-        <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=700&q=80" alt="Nexus Corporate Park" loading="lazy"/>
-        <div class="project-img-overlay">
-          <span class="project-view-btn">View Project</span>
-        </div>
-        <span class="project-category-tag">Commercial</span>
-      </div>
-      <div class="project-body">
-        <div class="project-meta">
-          <span class="project-location">Pune, MH</span>
-          <span class="project-year">2023</span>
-        </div>
-        <h3 class="project-name">Nexus Corporate Park</h3>
-        <p class="project-desc">A flagship commercial campus spanning 3 towers with co-working hubs, conference centres, and ground-floor retail.</p>
-        <div class="project-footer">
-          <div class="project-stat">
-            <span class="project-stat-val">3</span>
-            <span class="project-stat-key">Towers</span>
-          </div>
-          <div class="project-stat">
-            <span class="project-stat-val">42K</span>
-            <span class="project-stat-key">Sq. Ft.</span>
-          </div>
-          <div class="project-stat">
-            <span class="project-stat-val">14M</span>
-            <span class="project-stat-key">Value</span>
-          </div>
-          <span class="project-arrow-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </span>
-        </div>
-      </div>
-    </a>
-
-    <!-- Project 3 -->
-    <a href="./pages/project-details.html" class="project-card">
-      <div class="project-border-glow"></div>
-      <div class="project-img">
-        <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=700&q=80" alt="The Amber Kitchen" loading="lazy"/>
-        <div class="project-img-overlay">
-          <span class="project-view-btn">View Project</span>
-        </div>
-        <span class="project-category-tag">Interior</span>
-      </div>
-      <div class="project-body">
-        <div class="project-meta">
-          <span class="project-location">Bangalore, KA</span>
-          <span class="project-year">2023</span>
-        </div>
-        <h3 class="project-name">The Amber Penthouse</h3>
-        <p class="project-desc">Full interior fit-out of a 6,000 sq ft penthouse featuring bespoke joinery, Italian marble, and custom lighting design.</p>
-        <div class="project-footer">
-          <div class="project-stat">
-            <span class="project-stat-val">6K</span>
-            <span class="project-stat-key">Sq. Ft.</span>
-          </div>
-          <div class="project-stat">
-            <span class="project-stat-val">9</span>
-            <span class="project-stat-key">Months</span>
-          </div>
-          <div class="project-stat">
-            <span class="project-stat-val">5★</span>
-            <span class="project-stat-key">Rated</span>
-          </div>
-          <span class="project-arrow-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </span>
-        </div>
-      </div>
-    </a>
-
-    <!-- Project 4 -->
-    <a href="./pages/project-details.html" class="project-card">
-      <div class="project-border-glow"></div>
-      <div class="project-img">
-        <img src="https://images.unsplash.com/photo-1580587771525-78b9dba3b914?w=700&q=80" alt="Greenfield Villas" loading="lazy"/>
-        <div class="project-img-overlay">
-          <span class="project-view-btn">View Project</span>
-        </div>
-        <span class="project-category-tag">Residential</span>
-      </div>
-      <div class="project-body">
-        <div class="project-meta">
-          <span class="project-location">Hyderabad, TS</span>
-          <span class="project-year">2022</span>
-        </div>
-        <h3 class="project-name">Greenfield Villas</h3>
-        <p class="project-desc">An exclusive gated community of 40 luxury villas with private gardens, smart home systems, and a clubhouse.</p>
-        <div class="project-footer">
-          <div class="project-stat">
-            <span class="project-stat-val">40</span>
-            <span class="project-stat-key">Villas</span>
-          </div>
-          <div class="project-stat">
-            <span class="project-stat-val">12</span>
-            <span class="project-stat-key">Acres</span>
-          </div>
-          <div class="project-stat">
-            <span class="project-stat-val">22M</span>
-            <span class="project-stat-key">Value</span>
-          </div>
-          <span class="project-arrow-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </span>
-        </div>
-      </div>
-    </a>
-
-    <!-- Project 5 -->
-    <a href="./pages/project-details.html" class="project-card">
-      <div class="project-border-glow"></div>
-      <div class="project-img">
-        <img src="https://images.unsplash.com/photo-1572120360610-d971b9d7767c?w=700&q=80" alt="Heritage Hotel Renovation" loading="lazy"/>
-        <div class="project-img-overlay">
-          <span class="project-view-btn">View Project</span>
-        </div>
-        <span class="project-category-tag">Renovation</span>
-      </div>
-      <div class="project-body">
-        <div class="project-meta">
-          <span class="project-location">Delhi, DL</span>
-          <span class="project-year">2022</span>
-        </div>
-        <h3 class="project-name">Heritage Grand Hotel</h3>
-        <p class="project-desc">Complete structural and interior renovation of a 1920s heritage property, restoring original character with modern luxury standards.</p>
-        <div class="project-footer">
-          <div class="project-stat">
-            <span class="project-stat-val">120</span>
-            <span class="project-stat-key">Rooms</span>
-          </div>
-          <div class="project-stat">
-            <span class="project-stat-val">1920</span>
-            <span class="project-stat-key">Built</span>
-          </div>
-          <div class="project-stat">
-            <span class="project-stat-val">2Yr</span>
-            <span class="project-stat-key">Timeline</span>
-          </div>
-          <span class="project-arrow-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </span>
-        </div>
-      </div>
-    </a>
-
-    <!-- Project 6 -->
-    <a href="./pages/project-details.html" class="project-card">
-      <div class="project-border-glow"></div>
-      <div class="project-img">
-        <img src="https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=700&q=80" alt="Orion Mall Extension" loading="lazy"/>
-        <div class="project-img-overlay">
-          <span class="project-view-btn">View Project</span>
-        </div>
-        <span class="project-category-tag">Commercial</span>
-      </div>
-      <div class="project-body">
-        <div class="project-meta">
-          <span class="project-location">Chennai, TN</span>
-          <span class="project-year">2021</span>
-        </div>
-        <h3 class="project-name">Orion Mall Extension</h3>
-        <p class="project-desc">A 90,000 sq ft retail and entertainment extension to an existing mall, including a 12-screen multiplex and food court.</p>
-        <div class="project-footer">
-          <div class="project-stat">
-            <span class="project-stat-val">90K</span>
-            <span class="project-stat-key">Sq. Ft.</span>
-          </div>
-          <div class="project-stat">
-            <span class="project-stat-val">12</span>
-            <span class="project-stat-key">Screens</span>
-          </div>
-          <div class="project-stat">
-            <span class="project-stat-val">30+</span>
-            <span class="project-stat-key">Outlets</span>
-          </div>
-          <span class="project-arrow-link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </span>
-        </div>
-      </div>
-    </a>
+    <?php endif; ?>
   </div>
   <div class="carousel-dots projects-dots" id="projectsDots"></div>
 
   <div class="projects-bottom">
-    <a href="./pages/projects.html" class="btn-outline-gold">
+    <a href="./pages/users/projects.php" class="btn-outline-gold">
       View More
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
@@ -774,98 +565,7 @@
         <p class="form-status" id="formStatus"></p>
       </form>
     </div>
-
   </div>
 </section>
 
-<!-- ── FOOTER ── -->
-<!-- ── FOOTER ── -->
-<footer>
-  <div class="footer-top">
-    <div class="footer-brand">
-      <a href="#home" class="nav-logo">
-        <span class="logo-e">E</span><span class="logo-rix">RIX</span>
-        <span class="logo-dot"></span>
-      </a>
-      <p class="footer-tagline">Engineering Excellence. Constructing the Future. Transforming ideas into structures that last.</p>
-      <div class="footer-socials">
-        <a href="#" class="social-link" aria-label="Instagram">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
-        </a>
-        <a href="#" class="social-link" aria-label="LinkedIn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
-        </a>
-        <a href="#" class="social-link" aria-label="Facebook">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
-        </a>
-        <a href="https://wa.me/919999999999" class="social-link" aria-label="WhatsApp">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.492a.75.75 0 00.921.921l5.64-1.471A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.592-.476-5.11-1.314l-.368-.213-3.812.994.994-3.812-.213-.368A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-        </a>
-      </div>
-    </div>
-
-    <div class="footer-col">
-      <h5>Navigate</h5>
-      <ul>
-        <li><a href="#home">Home</a></li>
-        <li><a href="./pages/about.html">About Us</a></li>
-        <li><a href="./pages/services.html">Services</a></li>
-        <li><a href="./pages/projects.html">Projects</a></li>
-        <li><a href="./pages/blogs.html">Blogs</a></li>
-        <li><a href="./pages/contact.html">Contact</a></li>
-      </ul>
-    </div>
-
-    <div class="footer-col">
-      <h5>Services</h5>
-      <ul>
-        <li><a href="#services">Residential</a></li>
-        <li><a href="#services">Commercial</a></li>
-        <li><a href="#services">Renovation</a></li>
-        <li><a href="#services">Interior Fit-Out</a></li>
-      </ul>
-    </div>
-
-    <div class="footer-col">
-      <h5>Contact</h5>
-      <ul>
-        <li><a href="tel:+919876543210">+91 98765 43210</a></li>
-        <li><a href="mailto:info@erixconstruction.com">info@erixconstruction.com</a></li>
-        <li><a href="#contact">BKC, Mumbai — 400051</a></li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="footer-bottom">
-    <p class="footer-copy">&copy; 2025 <span>Erix Construction</span>. All rights reserved.</p>
-    <div class="footer-legal">
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Use</a>
-    </div>
-  </div>
-</footer>
-
-
-<!-- ── WHATSAPP FLOATING WIDGET ── -->
-<!-- ── WHATSAPP FLOATING WIDGET ── -->
-<a class="wa-widget" href="https://wa.me/919999999999?text=Hi%20Erix%2C%20I%27d%20like%20to%20discuss%20a%20project."
-   target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
-  <div class="wa-widget-img-container">
-    <img src="./assets/images/chat_builder.png" alt="Erix Support" class="wa-widget-img"/>
-  </div>
-  <div class="wa-widget-text">
-    <span class="wa-widget-title">Do You Have A Project To Discuss?</span>
-    <span class="wa-widget-subtitle">Let's Chat.</span>
-  </div>
-  <div class="wa-widget-btn">
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-      <path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.492a.75.75 0 00.921.921l5.64-1.471A11.945 11.945 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.848 0-3.592-.476-5.11-1.314l-.368-.213-3.812.994.994-3.812-.213-.368A9.956 9.956 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
-    </svg>
-  </div>
-</a>
-
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script src="./JS/script.js"></script>
-</body>
-</html>
+<?php include 'pages/includes/footer.php'; ?>

@@ -48,45 +48,361 @@ if (nav) {
 
   // Pre-load EmailJS
   ensureEmailJSLoaded();
+  // ── Result Modal System ──
+  (function buildResultModal() {
+    const css = `
+      /* ── Result Modal Overlay ── */
+      #erix-result-overlay {
+        position: fixed; inset: 0; z-index: 99999;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(0,0,0,0); pointer-events: none;
+        transition: background 0.35s ease;
+      }
+      #erix-result-overlay.visible {
+        background: rgba(0,0,0,0.72); pointer-events: all;
+      }
 
+      /* Card */
+      #erix-result-card {
+        position: relative;
+        width: min(92vw, 440px);
+        background: #131313;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 20px;
+        padding: 52px 36px 40px;
+        text-align: center;
+        font-family: 'DM Sans', sans-serif;
+        box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+        transform: scale(0.82) translateY(24px);
+        opacity: 0;
+        transition: transform 0.42s cubic-bezier(0.34,1.56,0.64,1), opacity 0.32s ease;
+        overflow: hidden;
+      }
+      #erix-result-overlay.visible #erix-result-card {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+
+      /* Glow bar at top */
+      #erix-result-card::before {
+        content: '';
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 3px;
+        background: var(--erix-modal-accent, #D4A017);
+        border-radius: 20px 20px 0 0;
+        transition: background 0.3s;
+      }
+
+      /* Close btn */
+      #erix-result-close {
+        position: absolute; top: 16px; right: 18px;
+        background: rgba(255,255,255,0.06); border: none; cursor: pointer;
+        width: 32px; height: 32px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        color: rgba(255,255,255,0.5); font-size: 18px; line-height: 1;
+        transition: background 0.2s, color 0.2s;
+      }
+      #erix-result-close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+      /* Icon circle */
+      #erix-result-icon-wrap {
+        width: 88px; height: 88px; border-radius: 50%;
+        margin: 0 auto 24px;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(255,255,255,0.04);
+        border: 2px solid rgba(255,255,255,0.08);
+        position: relative;
+      }
+      #erix-result-icon-wrap svg {
+        width: 44px; height: 44px;
+        stroke-dasharray: 120;
+        stroke-dashoffset: 120;
+        transition: stroke-dashoffset 0.7s cubic-bezier(0.4,0,0.2,1) 0.18s;
+      }
+      #erix-result-overlay.visible #erix-result-icon-wrap svg {
+        stroke-dashoffset: 0;
+      }
+
+      /* Ripple ring animation */
+      #erix-result-icon-wrap::after {
+        content: '';
+        position: absolute; inset: -8px; border-radius: 50%;
+        border: 2px solid var(--erix-modal-accent, #D4A017);
+        opacity: 0;
+        animation: none;
+      }
+      #erix-result-overlay.visible #erix-result-icon-wrap::after {
+        animation: erix-ring-pulse 1.4s ease-out 0.3s forwards;
+      }
+      @keyframes erix-ring-pulse {
+        0%   { transform: scale(0.9); opacity: 0.7; }
+        100% { transform: scale(1.35); opacity: 0; }
+      }
+
+      /* Title */
+      #erix-result-title {
+        font-size: 22px; font-weight: 700; letter-spacing: -0.3px;
+        color: #fff; margin-bottom: 10px;
+      }
+
+      /* Body text */
+      #erix-result-body {
+        font-size: 15px; line-height: 1.6;
+        color: rgba(245,245,240,0.65);
+        margin-bottom: 32px;
+      }
+
+      /* Action button */
+      #erix-result-btn {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 13px 32px; border-radius: 6px;
+        border: none; cursor: pointer;
+        font-family: 'DM Sans', sans-serif;
+        font-size: 15px; font-weight: 600; letter-spacing: 0.3px;
+        background: var(--erix-modal-accent, #D4A017); color: #0d0d0d;
+        transition: opacity 0.2s, transform 0.2s;
+      }
+      #erix-result-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+      /* Particle dots (decorative) */
+      .erix-modal-dot {
+        position: absolute; border-radius: 50%;
+        background: var(--erix-modal-accent, #D4A017);
+        opacity: 0; animation: none;
+      }
+      #erix-result-overlay.visible .erix-modal-dot {
+        animation: erix-dot-pop 0.8s ease-out forwards;
+      }
+      @keyframes erix-dot-pop {
+        0%   { transform: scale(0); opacity: 0.9; }
+        60%  { opacity: 0.5; }
+        100% { transform: scale(1); opacity: 0; }
+      }
+    `;
+
+    const styleEl = document.createElement('style');
+    styleEl.id = 'erix-result-modal-styles';
+    styleEl.textContent = css;
+    document.head.appendChild(styleEl);
+
+    // Build overlay + card DOM
+    const overlay = document.createElement('div');
+    overlay.id = 'erix-result-overlay';
+    overlay.innerHTML = `
+      <div id="erix-result-card">
+        <button id="erix-result-close" aria-label="Close">&times;</button>
+
+        <!-- decorative dots -->
+        <span class="erix-modal-dot" style="width:8px;height:8px;top:22%;left:14%;animation-delay:0.35s;animation-duration:1.0s"></span>
+        <span class="erix-modal-dot" style="width:5px;height:5px;top:15%;right:20%;animation-delay:0.55s;animation-duration:0.9s"></span>
+        <span class="erix-modal-dot" style="width:6px;height:6px;bottom:28%;left:10%;animation-delay:0.45s;animation-duration:1.1s"></span>
+        <span class="erix-modal-dot" style="width:4px;height:4px;bottom:20%;right:12%;animation-delay:0.60s;animation-duration:0.85s"></span>
+
+        <div id="erix-result-icon-wrap">
+          <svg id="erix-result-icon" viewBox="0 0 44 44" fill="none" stroke="#D4A017" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></svg>
+        </div>
+        <h2 id="erix-result-title"></h2>
+        <p  id="erix-result-body"></p>
+        <button id="erix-result-btn"></button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+
+    // Close handlers
+    document.getElementById('erix-result-close').addEventListener('click', window.erixCloseResultModal = function() {
+      overlay.classList.remove('visible');
+    });
+    overlay.addEventListener('click', e => { if (e.target === overlay) window.erixCloseResultModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') window.erixCloseResultModal(); });
+  })();
+
+  // Public API to show the modal
+  window.showResultModal = function(type, title, body) {
+    const overlay  = document.getElementById('erix-result-overlay');
+    const icon     = document.getElementById('erix-result-icon');
+    const titleEl  = document.getElementById('erix-result-title');
+    const bodyEl   = document.getElementById('erix-result-body');
+    const btn      = document.getElementById('erix-result-btn');
+    const card     = document.getElementById('erix-result-card');
+    const iconWrap = document.getElementById('erix-result-icon-wrap');
+
+    const isSuccess = (type === 'success');
+    const accent = isSuccess ? '#D4A017' : '#e53935';
+    const iconPath = isSuccess
+      ? '<path d="M8 22 L18 32 L36 12"/>'   // checkmark
+      : '<path d="M14 14 L30 30 M30 14 L14 30"/>'; // X
+
+    // Apply accent colour
+    card.style.setProperty('--erix-modal-accent', accent);
+    overlay.style.setProperty('--erix-modal-accent', accent);
+    icon.setAttribute('stroke', accent);
+    iconWrap.style.borderColor = accent + '40';
+    iconWrap.style.background  = accent + '12';
+    btn.style.background = isSuccess ? '#D4A017' : accent;
+    btn.style.color = isSuccess ? '#0d0d0d' : '#fff';
+
+    icon.innerHTML = iconPath;
+    icon.style.strokeDasharray  = '120';
+    icon.style.strokeDashoffset = '120';
+
+    titleEl.textContent = title;
+    bodyEl.textContent  = body;
+    btn.textContent     = isSuccess ? 'Great, thanks!' : 'Got it';
+    btn.onclick = window.erixCloseResultModal;
+
+    // Reset + show
+    overlay.classList.remove('visible');
+    void overlay.offsetWidth; // force reflow
+    overlay.classList.add('visible');
+
+    // Reset icon animation by re-triggering
+    setTimeout(() => { icon.style.strokeDashoffset = '0'; }, 50);
+
+    // Auto-dismiss success after 5s
+    if (isSuccess) setTimeout(window.erixCloseResultModal, 5000);
+  };
+
+  // ── Shared form validation helper ──
+
+  function validateContactForm(fields) {
+    const errors = {};
+    const name = fields.name ? fields.name.trim() : '';
+    const phone = fields.phone ? fields.phone.trim() : '';
+    const email = fields.email ? fields.email.trim() : '';
+    const service = fields.service ? fields.service.trim() : '';
+    const message = fields.message ? fields.message.trim() : '';
+
+    if (!name || name.length < 2) errors.name = 'Please enter your full name (at least 2 characters).';
+    if (!phone || !/^[\d\s\+\-\(\)]{7,15}$/.test(phone)) errors.phone = 'Please enter a valid phone number.';
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = 'Please enter a valid email address.';
+    if (!service) errors.service = 'Please select a service.';
+    if (!message || message.length < 10) errors.message = 'Please enter a message (at least 10 characters).';
+
+    return errors;
+  }
+
+  function showFieldError(inputEl, msg) {
+    clearFieldError(inputEl);
+    inputEl.classList.add('input-error');
+    const err = document.createElement('span');
+    err.className = 'field-error-msg';
+    err.textContent = msg;
+    inputEl.parentNode.appendChild(err);
+  }
+
+  function clearFieldError(inputEl) {
+    inputEl.classList.remove('input-error');
+    const prev = inputEl.parentNode.querySelector('.field-error-msg');
+    if (prev) prev.remove();
+  }
+
+  function clearAllErrors(formEl) {
+    formEl.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+    formEl.querySelectorAll('.field-error-msg').forEach(el => el.remove());
+  }
+
+  // Inject validation error styles once
+  if (!document.getElementById('erix-validation-styles')) {
+    const style = document.createElement('style');
+    style.id = 'erix-validation-styles';
+    style.textContent = `
+      .input-error { border-color: #e53935 !important; box-shadow: 0 0 0 2px rgba(229,57,53,0.18) !important; }
+      .field-error-msg { display:block; color:#e53935; font-size:12px; margin-top:4px; font-family:'DM Sans',sans-serif; }
+    `;
+    document.head.appendChild(style);
+  }
+
+  // ── Main Contact Form ──
   const contactForm = document.getElementById('contactForm');
   if (contactForm) {
+    // Clear field errors on input
+    contactForm.querySelectorAll('input, select, textarea').forEach(el => {
+      el.addEventListener('input', () => clearFieldError(el));
+      el.addEventListener('change', () => clearFieldError(el));
+    });
+
     contactForm.addEventListener('submit', function(e) {
       e.preventDefault();
+      clearAllErrors(this);
+
       const btn    = document.getElementById('formSubmit');
       const status = document.getElementById('formStatus');
+
+      // Gather values
+      const formData = new FormData(this);
+      const fields = {
+        name:    formData.get('from_name'),
+        phone:   formData.get('phone'),
+        email:   formData.get('from_email'),
+        service: formData.get('service'),
+        message: formData.get('message')
+      };
+
+      // Validate
+      const errors = validateContactForm(fields);
+      if (Object.keys(errors).length > 0) {
+        const nameEl    = this.querySelector('[name="from_name"]');
+        const phoneEl   = this.querySelector('[name="phone"]');
+        const emailEl   = this.querySelector('[name="from_email"]');
+        const serviceEl = this.querySelector('[name="service"]');
+        const msgEl     = this.querySelector('[name="message"]');
+        if (errors.name    && nameEl)    showFieldError(nameEl, errors.name);
+        if (errors.phone   && phoneEl)   showFieldError(phoneEl, errors.phone);
+        if (errors.email   && emailEl)   showFieldError(emailEl, errors.email);
+        if (errors.service && serviceEl) showFieldError(serviceEl, errors.service);
+        if (errors.message && msgEl)     showFieldError(msgEl, errors.message);
+        return;
+      }
+
       btn.disabled = true;
       btn.textContent = 'Sending…';
       status.className = 'form-status';
       status.textContent = '';
 
-      ensureEmailJSLoaded(() => {
-        if (typeof emailjs === 'undefined') {
-          status.textContent = '✗ Email service is currently unavailable. Please try WhatsApp.';
-          status.className = 'form-status error';
-          btn.disabled = false;
-          btn.innerHTML = 'Send Message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
-          return;
+      // Submit directly to local DB
+      const rootPath = typeof ERIX_ROOT !== 'undefined' ? ERIX_ROOT : './';
+      fetch(rootPath + 'pages/admin/log_message.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          full_name: fields.name,
+          phone:     fields.phone,
+          email:     fields.email,
+          service:   fields.service,
+          message:   fields.message
+        })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          contactForm.reset();
+          showResultModal(
+            'success',
+            'Message Received!',
+            'Thank you for reaching out. Our team will get back to you within 24 hours.'
+          );
+        } else {
+          showResultModal(
+            'error',
+            'Submission Failed',
+            (data.message || 'Something went wrong on our end. Please try again or contact us directly.')
+          );
         }
-
-        // Replace 'YOUR_SERVICE_ID' and 'YOUR_TEMPLATE_ID' with your EmailJS values
-        emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
-          .then(() => {
-            status.textContent = '✓ Message sent! We will be in touch within 24 hours.';
-            status.className = 'form-status success';
-            this.reset();
-          })
-          .catch(() => {
-            status.textContent = '✗ Something went wrong. Please try WhatsApp or email us directly.';
-            status.className = 'form-status error';
-          })
-          .finally(() => {
-            btn.disabled = false;
-            btn.innerHTML = 'Send Message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
-          });
+      })
+      .catch(() => {
+        showResultModal(
+          'error',
+          'Network Error',
+          'Could not connect to the server. Please check your internet connection and try again.'
+        );
+      })
+      .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = 'Send Message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
       });
     });
   }
+
 
   // ── Testimonials slider ──
   const slides = document.querySelectorAll('.testi-slide');
@@ -418,7 +734,7 @@ if (nav) {
       }
 
       const pageName = window.location.pathname.split('/').pop();
-      const isHomePage = pageName === 'index.html' || pageName === '' || window.location.pathname.endsWith('/');
+      const isHomePage = pageName === 'index.html' || pageName === 'index.php' || pageName === '' || window.location.pathname.endsWith('/');
 
       if (isHomePage && !sessionStorage.getItem('popupShown')) {
         setTimeout(() => {
@@ -428,39 +744,91 @@ if (nav) {
       }
 
       if (popupForm) {
+        // Clear field errors on input
+        popupForm.querySelectorAll('input, select, textarea').forEach(el => {
+          el.addEventListener('input', () => clearFieldError(el));
+          el.addEventListener('change', () => clearFieldError(el));
+        });
+
         popupForm.addEventListener('submit', function(e) {
           e.preventDefault();
-          const btn = document.getElementById('popupSubmitBtn');
+          clearAllErrors(this);
+
+          const btn    = document.getElementById('popupSubmitBtn');
           const status = document.getElementById('popupStatusMsg');
+
+          // Gather values
+          const formData = new FormData(this);
+          const fields = {
+            name:    formData.get('from_name'),
+            phone:   formData.get('phone'),
+            email:   formData.get('from_email'),
+            service: formData.get('service'),
+            message: formData.get('message')
+          };
+
+          // Validate
+          const errors = validateContactForm(fields);
+          if (Object.keys(errors).length > 0) {
+            const nameEl    = this.querySelector('[name="from_name"]');
+            const phoneEl   = this.querySelector('[name="phone"]');
+            const emailEl   = this.querySelector('[name="from_email"]');
+            const serviceEl = this.querySelector('[name="service"]');
+            const msgEl     = this.querySelector('[name="message"]');
+            if (errors.name    && nameEl)    showFieldError(nameEl, errors.name);
+            if (errors.phone   && phoneEl)   showFieldError(phoneEl, errors.phone);
+            if (errors.email   && emailEl)   showFieldError(emailEl, errors.email);
+            if (errors.service && serviceEl) showFieldError(serviceEl, errors.service);
+            if (errors.message && msgEl)     showFieldError(msgEl, errors.message);
+            return;
+          }
+
           btn.disabled = true;
           btn.textContent = 'Sending…';
           status.className = 'form-status';
           status.textContent = '';
 
-          ensureEmailJSLoaded(() => {
-            if (typeof emailjs === 'undefined') {
-              status.textContent = '✗ Email service is currently unavailable. Please try WhatsApp.';
-              status.className = 'form-status error';
-              btn.disabled = false;
-              btn.innerHTML = 'Send Message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
-              return;
+          // Submit directly to local DB
+          const rootPath = typeof ERIX_ROOT !== 'undefined' ? ERIX_ROOT : './';
+          fetch(rootPath + 'pages/admin/log_message.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              full_name: fields.name,
+              phone:     fields.phone,
+              email:     fields.email,
+              service:   fields.service,
+              message:   fields.message
+            })
+          })
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === 'success') {
+              popupForm.reset();
+              closeModal();
+              showResultModal(
+                'success',
+                'Message Received!',
+                'Thank you for reaching out. Our team will get back to you within 24 hours.'
+              );
+            } else {
+              showResultModal(
+                'error',
+                'Submission Failed',
+                (data.message || 'Something went wrong on our end. Please try again or contact us directly.')
+              );
             }
-
-            emailjs.sendForm('YOUR_SERVICE_ID', 'YOUR_TEMPLATE_ID', this)
-              .then(() => {
-                status.textContent = '✓ Message sent! We will be in touch within 24 hours.';
-                status.className = 'form-status success';
-                this.reset();
-                setTimeout(closeModal, 2500);
-              })
-              .catch(() => {
-                status.textContent = '✗ Something went wrong. Please try WhatsApp or email us directly.';
-                status.className = 'form-status error';
-              })
-              .finally(() => {
-                btn.disabled = false;
-                btn.innerHTML = 'Send Message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
-              });
+          })
+          .catch(() => {
+            showResultModal(
+              'error',
+              'Network Error',
+              'Could not connect to the server. Please check your internet connection and try again.'
+            );
+          })
+          .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = 'Send Message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
           });
         });
       }
