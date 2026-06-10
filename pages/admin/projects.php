@@ -105,18 +105,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($action === 'add' || $action === '
     $units = trim($_POST['units']);
     $sq_ft = trim($_POST['sq_ft']);
     $image_url = trim($_POST['image_url']);
+    $status = isset($_POST['status']) ? trim($_POST['status']) : 'Completed';
+    $is_featured = isset($_POST['is_featured']) ? 1 : 0;
     
     // File Upload handling
     if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
         $fileTmpPath = $_FILES['image_file']['tmp_name'];
         $fileName = $_FILES['image_file']['name'];
-        $fileSize = $_FILES['image_file']['size'];
-        $fileType = $_FILES['image_file']['type'];
         $fileNameCmps = explode(".", $fileName);
         $fileExtension = strtolower(end($fileNameCmps));
         
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-        if (in_array($fileExtension, $allowedExtensions)) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($finfo, $fileTmpPath);
+        finfo_close($finfo);
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+        
+        if (in_array($fileExtension, $allowedExtensions) && in_array($mime, $allowedMimes)) {
             // Create assets/images if not exists
             $uploadFileDir = '../../assets/images/';
             if (!is_dir($uploadFileDir)) {
@@ -130,24 +135,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($action === 'add' || $action === '
                 // Use relative path for database storage (so it works from index.php and pages/users/)
                 $image_url = 'assets/images/' . $newFileName;
             }
+        } else {
+            $_SESSION['error'] = "Invalid image format. Only JPG, PNG, and WEBP are allowed.";
+            header("Location: projects.php");
+            exit;
         }
     }
 
     if (!empty($name) && !empty($category) && !empty($location) && !empty($year) && !empty($description)) {
+        if ($is_featured) {
+            $checkStmt = $pdo->prepare("SELECT COUNT(*) FROM projects WHERE is_featured = 1" . ($action === 'edit' ? " AND id != ?" : ""));
+            $params = $action === 'edit' ? [$id] : [];
+            $checkStmt->execute($params);
+            if ($checkStmt->fetchColumn() >= 6) {
+                $is_featured = 0;
+                $msg = "Project saved, but couldn't be featured as the maximum limit of 6 featured projects is reached.";
+                $msgType = "warning";
+            }
+        }
+
         try {
             if ($action === 'add') {
-                $stmt = $pdo->prepare("INSERT INTO projects (name, category, location, year, description, floors, units, sq_ft, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$name, $category, $location, $year, $description, $floors, $units, $sq_ft, $image_url]);
+                $stmt = $pdo->prepare("INSERT INTO projects (name, category, location, year, description, floors, units, sq_ft, image_url, is_featured, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$name, $category, $location, $year, $description, $floors, $units, $sq_ft, $image_url, $is_featured, $status]);
                 $project_id = $pdo->lastInsertId();
-                $msg = "Project added successfully.";
-                $msgType = "success";
+                if (!$msg) {
+                    $msg = "Project added successfully.";
+                    $msgType = "success";
+                }
                 $action = 'list';
             } else {
-                $stmt = $pdo->prepare("UPDATE projects SET name = ?, category = ?, location = ?, year = ?, description = ?, floors = ?, units = ?, sq_ft = ?, image_url = ? WHERE id = ?");
-                $stmt->execute([$name, $category, $location, $year, $description, $floors, $units, $sq_ft, $image_url, $id]);
+                $stmt = $pdo->prepare("UPDATE projects SET name = ?, category = ?, location = ?, year = ?, description = ?, floors = ?, units = ?, sq_ft = ?, image_url = ?, is_featured = ?, status = ? WHERE id = ?");
+                $stmt->execute([$name, $category, $location, $year, $description, $floors, $units, $sq_ft, $image_url, $is_featured, $status, $id]);
                 $project_id = $id;
-                $msg = "Project updated successfully.";
-                $msgType = "success";
+                if (!$msg) {
+                    $msg = "Project updated successfully.";
+                    $msgType = "success";
+                }
                 $action = 'list';
             }
 
@@ -162,7 +186,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($action === 'add' || $action === '
                         $fileExtension = strtolower(end($fileNameCmps));
                         
                         $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-                        if (in_array($fileExtension, $allowedExtensions)) {
+                        
+                        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                        $mime = finfo_file($finfo, $fileTmpPath);
+                        finfo_close($finfo);
+                        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+                        
+                        if (in_array($fileExtension, $allowedExtensions) && in_array($mime, $allowedMimes)) {
                             $uploadFileDir = '../../assets/images/';
                             if (!is_dir($uploadFileDir)) {
                                 mkdir($uploadFileDir, 0755, true);
@@ -360,6 +390,10 @@ if (($action === 'edit' || $action === 'view') && $id > 0) {
           <div class="meta-value"><span class="badge badge-info"><?php echo htmlspecialchars($project['category']); ?></span></div>
         </div>
         <div class="meta-item">
+          <div class="meta-label">Status</div>
+          <div class="meta-value"><span class="badge badge-secondary"><?php echo htmlspecialchars($project['status'] ?? 'Completed'); ?></span></div>
+        </div>
+        <div class="meta-item">
           <div class="meta-label">Location</div>
           <div class="meta-value"><?php echo htmlspecialchars($project['location']); ?></div>
         </div>
@@ -428,6 +462,7 @@ if (($action === 'edit' || $action === 'view') && $id > 0) {
           <th class="col-image">Image</th>
           <th class="col-name">Project Name</th>
           <th class="col-category">Category</th>
+          <th>Status</th>
           <th class="col-location">Location</th>
           <th class="col-year">Year</th>
         </tr>
@@ -446,8 +481,14 @@ if (($action === 'edit' || $action === 'view') && $id > 0) {
                   <span style="font-size: 11px; color: rgba(26,26,26,0.4);">No Image</span>
                 <?php endif; ?>
               </td>
-              <td class="col-name" style="font-weight: 500; font-size: 15px;"><?php echo htmlspecialchars($proj['name']); ?></td>
+              <td class="col-name" style="font-weight: 500; font-size: 15px;">
+                <?php echo htmlspecialchars($proj['name']); ?>
+                <?php if ($proj['is_featured']): ?>
+                  <span class="badge badge-warning" style="background: rgba(212,160,23,0.2); color: var(--gold); margin-left: 10px; font-size: 11px;">Featured</span>
+                <?php endif; ?>
+              </td>
               <td class="col-category"><span class="badge badge-info"><?php echo htmlspecialchars($proj['category']); ?></span></td>
+              <td><span class="badge badge-secondary"><?php echo htmlspecialchars($proj['status'] ?? 'Completed'); ?></span></td>
               <td class="col-location"><?php echo htmlspecialchars($proj['location']); ?></td>
               <td class="col-year"><?php echo htmlspecialchars($proj['year']); ?></td>
             </tr>
@@ -483,6 +524,15 @@ if (($action === 'edit' || $action === 'view') && $id > 0) {
     </div>
     
     <div class="form-group">
+      <label for="status">Status <span style="color:var(--danger)">*</span></label>
+      <select id="status" name="status" required>
+        <option value="Upcoming" <?php echo ($project && ($project['status'] ?? '') === 'Upcoming') ? 'selected' : ''; ?>>Upcoming</option>
+        <option value="Ongoing" <?php echo ($project && ($project['status'] ?? '') === 'Ongoing') ? 'selected' : ''; ?>>Ongoing</option>
+        <option value="Completed" <?php echo (!$project || ($project['status'] ?? 'Completed') === 'Completed') ? 'selected' : ''; ?>>Completed</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
       <label for="year">Completion Year <span style="color:var(--danger)">*</span></label>
       <input type="text" id="year" name="year" value="<?php echo ($project) ? htmlspecialchars($project['year']) : ''; ?>" placeholder="e.g. 2024" required>
     </div>
@@ -510,6 +560,13 @@ if (($action === 'edit' || $action === 'view') && $id > 0) {
     <div class="form-group full-width">
       <label for="description">Project Description <span style="color:var(--danger)">*</span></label>
       <textarea id="description" name="description" rows="6" placeholder="Write a detailed description of the project..." required><?php echo ($project) ? htmlspecialchars($project['description']) : ''; ?></textarea>
+    </div>
+    
+    <div class="form-group full-width" style="margin-top: 10px;">
+      <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text);">
+        <input type="checkbox" name="is_featured" value="1" <?php echo ($project && isset($project['is_featured']) && $project['is_featured']) ? 'checked' : ''; ?> style="width: 16px; height: 16px; accent-color: var(--gold);">
+        Feature on Landing Page (Max 6 projects)
+      </label>
     </div>
     
     <div class="form-group full-width" style="border-top: 1px solid rgba(245,245,240,0.1); padding-top: 20px;">

@@ -38,8 +38,17 @@ try {
     // Ignore
 }
 
-$pageTitle = ($post ? $post['title'] : "Blog Details") . " - Erix Construction";
+if (!$post) {
+    header("Location: blogs.php");
+    exit;
+}
+
 $pathPrefix = "../../";
+$pageTitle = ($post ? $post['title'] : "Blog Details") . " | Erix Construction Insights";
+$metaDescription = $post ? substr(strip_tags($post['summary']), 0, 160) : "Read construction insights from Erix Construction.";
+$metaKeywords = "construction blog, " . ($post ? "Erix Construction, " . strtolower(str_replace(' ', ', ', $post['title'])) : "");
+$ogImage = $post && $post['image_url'] ? (strpos($post['image_url'], 'http') === 0 ? $post['image_url'] : $pathPrefix . $post['image_url']) : "";
+
 $currentPage = "blogs";
 $navClass = "scrolled";
 $navLocked = true;

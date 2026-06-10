@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /pages/admin/
+Disallow: /config.php
+Disallow: /config.example.php
+Disallow: /schema.sql
+
+Sitemap: https://erix.42web.io/sitemap.xml

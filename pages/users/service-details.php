@@ -20,7 +20,11 @@ if (!$service) {
     exit;
 }
 
-$pageTitle = htmlspecialchars($service['title']) . " - Erix Construction";
+$pageTitle = htmlspecialchars($service['title']) . " | Erix Construction Services";
+$metaDescription = $service ? substr(strip_tags($service['short_desc']), 0, 160) : "Explore our construction services at Erix Construction.";
+$metaKeywords = "Erix Construction services, " . ($service ? htmlspecialchars($service['tags']) : "construction services");
+$ogImage = $service && $service['image_url'] ? (strpos($service['image_url'], 'http') === 0 ? $service['image_url'] : $pathPrefix . $service['image_url']) : "";
+
 $currentPage = "services";
 $navClass = "scrolled";
 $navLocked = true;

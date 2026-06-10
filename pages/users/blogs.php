@@ -1,5 +1,7 @@
 <?php
-$pageTitle = "Our Blogs - Erix Construction";
+$pageTitle = "Construction Insights & News Blog | Erix Construction";
+$metaDescription = "Read the latest trends, insights, and news in sustainable construction, urban logistics, and modern architectural design from Erix experts.";
+$metaKeywords = "construction blog, sustainable construction news, architectural design trends, building insights, Erix news";
 $pathPrefix = "../../";
 $currentPage = "blogs";
 $navClass = "scrolled";

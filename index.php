@@ -1,5 +1,7 @@
 <?php
-$pageTitle = "Erix Construction - Engineering Excellence";
+$pageTitle = "Top Construction Company in India | Erix Construction";
+$metaDescription = "Erix Construction is an industry-leading construction and engineering firm specializing in luxury residential, commercial, and structural retrofitting.";
+$metaKeywords = "construction company, top builders, luxury residential construction, commercial construction, structural engineering, Erix Construction";
 $pathPrefix = "./";
 $currentPage = "home";
 include 'pages/includes/header.php';
@@ -7,7 +9,7 @@ include 'pages/includes/header.php';
 // Load projects from database for the showcase carousel
 require_once 'pages/admin/db.php';
 try {
-    $featuredProjects = $pdo->query("SELECT * FROM projects ORDER BY created_at DESC LIMIT 6")->fetchAll();
+    $featuredProjects = $pdo->query("SELECT * FROM projects WHERE is_featured = 1 ORDER BY created_at DESC LIMIT 6")->fetchAll();
 } catch (\PDOException $e) {
     $featuredProjects = [];
 }
@@ -47,7 +49,7 @@ try {
 
     <div class="hero-actions">
       <a href="./pages/users/projects.php" class="btn-primary">View Our Work</a>
-      <a href="#contact"  class="btn-ghost">Get a Quote</a>
+      <a href="#contact" id="hero-get-quote" class="btn-ghost">Get a Quote</a>
     </div>
   </div>
 
@@ -279,7 +281,7 @@ try {
     </div>
     <div class="trust-text">
       <span class="trust-label">Trusted by</span>
-      <span class="trust-val">world leading companies</span>
+      <span class="trust-val">Hundreds of Clients</span>
     </div>
   </div>
 

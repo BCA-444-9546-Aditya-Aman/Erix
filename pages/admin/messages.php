@@ -313,7 +313,7 @@ if ($id > 0 && $action !== 'delete') {
         <div class="meta-label">Phone Number</div>
         <div class="meta-value">
           <a href="tel:<?php echo htmlspecialchars($messageDetails['phone']); ?>" style="color: var(--gold); text-decoration: none;">
-            <?php echo htmlspecialchars($messageDetails['phone']); ?> 📞
+            <?php echo htmlspecialchars($messageDetails['phone']); ?>
           </a>
         </div>
       </div>

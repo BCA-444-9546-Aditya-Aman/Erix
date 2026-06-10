@@ -249,13 +249,15 @@ try {
 
 <div class="stats-grid" id="stats-grid-carousel">
   <!-- Card 1 -->
-  <a href="projects.php" class="stat-card">
+   <a href="messages.php" class="stat-card">
     <div class="stat-info">
-      <h3>Active Projects</h3>
-      <div class="stat-number"><?php echo $projectCount; ?></div>
+      <h3>New Inquiries</h3>
+      <div class="stat-number">
+        <?php echo $unreadMessageCount; ?>
+      </div>
     </div>
     <div class="stat-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
     </div>
   </a>
   
@@ -271,18 +273,13 @@ try {
   </a>
   
   <!-- Card 3 -->
-  <a href="messages.php" class="stat-card">
+  <a href="projects.php" class="stat-card">
     <div class="stat-info">
-      <h3>Contact Inquiries</h3>
-      <div class="stat-number">
-        <?php echo $messageCount; ?>
-        <?php if ($unreadMessageCount > 0): ?>
-          <span style="font-size: 16px; color: var(--gold); font-family: 'DM Sans', sans-serif; font-weight: 500; vertical-align: middle; margin-left: 8px;">(<?php echo $unreadMessageCount; ?> New)</span>
-        <?php endif; ?>
-      </div>
+      <h3>Total Projects</h3>
+      <div class="stat-number"><?php echo $projectCount; ?></div>
     </div>
     <div class="stat-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="28" height="28"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
     </div>
   </a>
 </div>

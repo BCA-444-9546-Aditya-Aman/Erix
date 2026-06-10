@@ -56,7 +56,7 @@
   </div>
 
   <div class="footer-bottom">
-    <p class="footer-copy">&copy; 2025 <span>Erix Construction</span>. All rights reserved.</p>
+    <p class="footer-copy">&copy; 2030 <span>Erix Construction</span>. All rights reserved.</p>
     <div class="footer-legal">
       <a href="#">Privacy Policy</a>
       <a href="#">Terms of Use</a>
@@ -81,6 +81,18 @@
     </svg>
   </div>
 </a>
+
+<!-- ── COOKIE CONSENT ── -->
+<div id="cookieConsent" class="cookie-consent">
+  <div class="cookie-content">
+    <h4>We value your privacy</h4>
+    <p>We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.</p>
+  </div>
+  <div class="cookie-actions">
+    <button id="declineCookies" class="btn-decline">Decline</button>
+    <button id="acceptCookies" class="btn-accept">Accept All</button>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script src="<?php echo isset($pathPrefix) ? $pathPrefix : './'; ?>JS/script.js"></script>

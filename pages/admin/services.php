@@ -14,7 +14,7 @@ include 'layout_top.php';
   }
   
   @media (max-width: 576px) {
-    .col-tags {
+    .col-tags, .col-featured {
       display: none !important;
     }
     
@@ -110,30 +110,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($action === 'add' || $action === '
     }
 
     if ($proceed) {
-        // File Upload handling
-        if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
-            $fileTmpPath = $_FILES['image_file']['tmp_name'];
-            $fileName = $_FILES['image_file']['name'];
-            $fileSize = $_FILES['image_file']['size'];
-            $fileType = $_FILES['image_file']['type'];
-            $fileNameCmps = explode(".", $fileName);
-            $fileExtension = strtolower(end($fileNameCmps));
-            
-            $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
-            if (in_array($fileExtension, $allowedExtensions)) {
-                $uploadFileDir = '../../assets/images/';
-                if (!is_dir($uploadFileDir)) {
-                    mkdir($uploadFileDir, 0755, true);
-                }
-                
-                $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
-                $dest_path = $uploadFileDir . $newFileName;
-                
-                if (move_uploaded_file($fileTmpPath, $dest_path)) {
-                    $image_url = 'assets/images/' . $newFileName;
-                }
+        // File Upload handling for service image
+    if (isset($_FILES['image_file']) && $_FILES['image_file']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['image_file']['tmp_name'];
+        $fileName = $_FILES['image_file']['name'];
+        $fileNameCmps = explode(".", $fileName);
+        $fileExtension = strtolower(end($fileNameCmps));
+        
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp'];
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $mime = finfo_file($finfo, $fileTmpPath);
+        finfo_close($finfo);
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+        
+        if (in_array($fileExtension, $allowedExtensions) && in_array($mime, $allowedMimes)) {
+            $uploadFileDir = '../../assets/images/';
+            if (!is_dir($uploadFileDir)) {
+                mkdir($uploadFileDir, 0755, true);
             }
+            $newFileName = md5(time() . $fileName) . '.' . $fileExtension;
+            $dest_path = $uploadFileDir . $newFileName;
+            
+            if (move_uploaded_file($fileTmpPath, $dest_path)) {
+                $image_url = 'assets/images/' . $newFileName;
+            }
+        } else {
+            $_SESSION['error'] = "Invalid image format. Only JPG, PNG, and WEBP are allowed.";
+            header("Location: services.php");
+            exit;
         }
+    }
 
         if (!empty($title) && !empty($short_desc) && !empty($full_desc)) {
             try {

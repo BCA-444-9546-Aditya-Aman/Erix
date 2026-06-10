@@ -1,5 +1,7 @@
 <?php
-$pageTitle = "Our Services - Erix Construction";
+$pageTitle = "Our Construction Services | Residential & Commercial | Erix Construction";
+$metaDescription = "Explore our comprehensive construction services including turnkey residential development, commercial spaces, interior fit-outs, and heritage renovations.";
+$metaKeywords = "construction services, turnkey residential development, commercial construction, interior fit-outs, heritage renovations, Erix Construction services";
 $pathPrefix = "../../";
 $currentPage = "services";
 $navClass = "scrolled";

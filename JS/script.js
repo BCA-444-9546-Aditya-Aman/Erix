@@ -20,34 +20,7 @@ if (nav) {
   });
 
 
-  // ── EmailJS Dynamic Loading & Init ──
-  const emailjsPublicKey = 'YOUR_PUBLIC_KEY'; // Replace with your actual Public Key
   
-  function ensureEmailJSLoaded(callback) {
-    if (typeof emailjs !== 'undefined') {
-      if (callback) callback();
-      return;
-    }
-    
-    // Check if script tag is already being appended
-    let script = document.querySelector('script[src*="email.min.js"]');
-    if (!script) {
-      script = document.createElement('script');
-      script.src = "https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js";
-      script.async = true;
-      document.head.appendChild(script);
-    }
-    
-    script.addEventListener('load', () => {
-      if (typeof emailjs !== 'undefined') {
-        emailjs.init(emailjsPublicKey);
-        if (callback) callback();
-      }
-    });
-  }
-
-  // Pre-load EmailJS
-  ensureEmailJSLoaded();
   // ── Result Modal System ──
   (function buildResultModal() {
     const css = `
@@ -840,3 +813,28 @@ if (nav) {
       injectModal();
     }
   })();
+
+  // ── COOKIE CONSENT ──
+  const cookieConsent = document.getElementById('cookieConsent');
+  const acceptCookies = document.getElementById('acceptCookies');
+  const declineCookies = document.getElementById('declineCookies');
+
+  if (cookieConsent && !localStorage.getItem('cookieConsent')) {
+    setTimeout(() => {
+      cookieConsent.classList.add('show');
+    }, 2000);
+  }
+
+  if (acceptCookies) {
+    acceptCookies.addEventListener('click', () => {
+      localStorage.setItem('cookieConsent', 'accepted');
+      cookieConsent.classList.remove('show');
+    });
+  }
+
+  if (declineCookies) {
+    declineCookies.addEventListener('click', () => {
+      localStorage.setItem('cookieConsent', 'declined');
+      cookieConsent.classList.remove('show');
+    });
+  }

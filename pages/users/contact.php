@@ -1,5 +1,7 @@
 <?php
-$pageTitle = "Contact Us - Erix Construction";
+$pageTitle = "Contact Us | Request a Quote | Erix Construction";
+$metaDescription = "Get in touch with Erix Construction for your next building project. Request a quote or schedule a consultation with our engineering team.";
+$metaKeywords = "contact Erix Construction, request a quote, construction consultation, engineering team contact";
 $pathPrefix = "../../";
 $currentPage = "contact";
 $navClass = "scrolled";
@@ -95,6 +97,11 @@ include '../includes/header.php';
             <label for="fmessage">Your Message</label>
             <textarea id="fmessage" name="message" placeholder="Tell us about your project — location, size, timeline…" required></textarea>
           </div>
+          
+          <div class="form-group full-width">
+            <div class="g-recaptcha" data-sitekey="<?php echo htmlspecialchars($siteKey); ?>"></div>
+          </div>
+          
           <button type="submit" class="form-submit" id="formSubmit">
             Send Message
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>

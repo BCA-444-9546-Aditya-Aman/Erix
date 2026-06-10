@@ -3,7 +3,10 @@ session_start();
 
 // Auth check
 if (!isset($_SESSION['admin_logged']) || $_SESSION['admin_logged'] !== true) {
-    header("Location: login.php");
+    $scriptName = $_SERVER['SCRIPT_NAME'];
+    $basePath = substr($scriptName, 0, strpos($scriptName, 'pages/admin/'));
+    $adminBase = rtrim($basePath, '/') . '/admin/';
+    header("Location: " . $adminBase . "login.php");
     exit;
 }
 
@@ -12,6 +15,12 @@ require_once 'db.php';
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<?php
+$scriptName = $_SERVER['SCRIPT_NAME'];
+$basePath = substr($scriptName, 0, strpos($scriptName, 'pages/admin/'));
+$adminBase = rtrim($basePath, '/') . '/admin/';
+?>
+  <base href="<?php echo htmlspecialchars($adminBase); ?>">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?php echo isset($adminTitle) ? $adminTitle : 'Admin Dashboard'; ?> - Erix Construction</title>

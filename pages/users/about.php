@@ -1,5 +1,7 @@
 <?php
-$pageTitle = "About Us - Erix Construction";
+$pageTitle = "About Us | Our Legacy & Vision | Erix Construction";
+$metaDescription = "Learn about Erix Construction's legacy of excellence, our core values, and our commitment to sustainable, high-quality engineering and construction.";
+$metaKeywords = "about Erix Construction, construction vision, building legacy, sustainable engineering, construction values";
 $pathPrefix = "../../";
 $currentPage = "about";
 $navClass = "scrolled";

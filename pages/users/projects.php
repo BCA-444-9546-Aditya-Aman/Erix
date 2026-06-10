@@ -1,5 +1,7 @@
 <?php
-$pageTitle = "Projects - Erix Construction";
+$pageTitle = "Showcase Projects & Portfolio | Erix Construction";
+$metaDescription = "View the Erix Construction portfolio. Discover our monumental commercial skyscrapers, luxury villas, and bespoke architectural projects.";
+$metaKeywords = "construction portfolio, showcase projects, completed buildings, Erix projects, commercial skyscrapers, luxury villas";
 $pathPrefix = "../../";
 $currentPage = "projects";
 $navClass = "scrolled";
@@ -32,7 +34,7 @@ try {
 <!-- ── FILTER BAR ── -->
 <section class="filter-section">
   <div class="filter-container">
-    <span class="filter-label">Filter by Category:</span>
+    <span class="filter-label">Filters:</span>
     <div class="filter-controls">
       <div class="custom-select-wrapper">
         <select id="projectCategoryFilter" class="filter-dropdown">
@@ -41,6 +43,18 @@ try {
           <option value="commercial">Commercial</option>
           <option value="renovation">Renovation</option>
           <option value="interior">Interior</option>
+        </select>
+        <!-- Custom Down Arrow -->
+        <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+      </div>
+      <div class="custom-select-wrapper">
+        <select id="projectStatusFilter" class="filter-dropdown">
+          <option value="all">All Statuses</option>
+          <option value="upcoming">Upcoming</option>
+          <option value="ongoing">Ongoing</option>
+          <option value="completed">Completed</option>
         </select>
         <!-- Custom Down Arrow -->
         <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -64,13 +78,14 @@ try {
         <?php foreach ($projects as $proj): ?>
           <?php 
             $catLower = strtolower($proj['category']);
+            $statLower = strtolower($proj['status'] ?? 'completed');
             // Determine image URL
             $imageSrc = $proj['image_url'];
             if (strpos($imageSrc, 'http') !== 0) {
                 $imageSrc = $pathPrefix . $imageSrc;
             }
           ?>
-          <a href="project-details.php?id=<?php echo $proj['id']; ?>" class="project-card <?php echo $catLower; ?>" data-category="<?php echo $catLower; ?>">
+          <a href="project-details.php?id=<?php echo $proj['id']; ?>" class="project-card <?php echo $catLower; ?>" data-category="<?php echo $catLower; ?>" data-status="<?php echo $statLower; ?>">
             <div class="project-border-glow"></div>
             <div class="project-img">
               <img src="<?php echo htmlspecialchars($imageSrc); ?>" alt="<?php echo htmlspecialchars($proj['name']); ?>" loading="lazy"/>
@@ -157,5 +172,41 @@ try {
   </div>
   <div class="carousel-dots projects-dots" id="projectsDots"></div>
 </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const catFilter = document.getElementById('projectCategoryFilter');
+    const statFilter = document.getElementById('projectStatusFilter');
+    const clearBtn = document.getElementById('clearFilterBtn');
+    const cards = document.querySelectorAll('.project-card');
+
+    function filterProjects() {
+      const catVal = catFilter.value;
+      const statVal = statFilter.value;
+
+      cards.forEach(card => {
+        const matchCat = (catVal === 'all' || card.dataset.category === catVal);
+        const matchStat = (statVal === 'all' || card.dataset.status === statVal);
+        
+        if (matchCat && matchStat) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    if (catFilter) catFilter.addEventListener('change', filterProjects);
+    if (statFilter) statFilter.addEventListener('change', filterProjects);
+
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        if(catFilter) catFilter.value = 'all';
+        if(statFilter) statFilter.value = 'all';
+        filterProjects();
+      });
+    }
+  });
+</script>
 
 <?php include '../includes/footer.php'; ?>

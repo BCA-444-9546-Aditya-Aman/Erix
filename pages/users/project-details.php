@@ -35,7 +35,11 @@ if ($project) {
     }
 }
 
-$pageTitle = ($project ? $project['name'] : "Project Details") . " - Erix Construction";
+$pageTitle = ($project ? $project['name'] : "Project Details") . " | Erix Construction Portfolio";
+$metaDescription = $project ? substr(strip_tags($project['description']), 0, 160) . "..." : "View our project details at Erix Construction.";
+$metaKeywords = "Erix Construction project, " . ($project ? $project['category'] . " construction, " . $project['location'] . " builders" : "construction portfolio");
+$ogImage = $project && $project['image_url'] ? (strpos($project['image_url'], 'http') === 0 ? $project['image_url'] : $pathPrefix . $project['image_url']) : "";
+
 $pathPrefix = "../../";
 $currentPage = "projects";
 $navClass = "scrolled";
@@ -140,6 +144,10 @@ include '../includes/header.php';
       <div class="meta-item">
         <span class="meta-label">Built Area</span>
         <span class="meta-value"><?php echo htmlspecialchars($project && $project['sq_ft'] ? $project['sq_ft'] : 'N/A'); ?></span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Status</span>
+        <span class="meta-value"><?php echo htmlspecialchars($project && isset($project['status']) ? $project['status'] : 'Completed'); ?></span>
       </div>
       <div class="meta-item">
         <span class="meta-label">Year Completed</span>

@@ -22,6 +22,8 @@ CREATE TABLE IF NOT EXISTS `projects` (
   `units` VARCHAR(50) DEFAULT NULL,
   `sq_ft` VARCHAR(50) DEFAULT NULL,
   `image_url` VARCHAR(255) DEFAULT NULL,
+  `is_featured` TINYINT(1) DEFAULT 0,
+  `status` VARCHAR(50) DEFAULT 'Completed',
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
