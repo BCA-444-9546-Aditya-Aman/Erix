@@ -102,9 +102,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($action === 'add' || $action === '
     $year = trim($_POST['year']);
     $description = trim($_POST['description']);
     $floors = trim($_POST['floors']);
-    $units = trim($_POST['units']);
+    $units = isset($_POST['units']) ? trim($_POST['units']) : '';
     $sq_ft = trim($_POST['sq_ft']);
     $image_url = trim($_POST['image_url']);
+    $difficulties = isset($_POST['difficulties']) && is_array($_POST['difficulties']) 
+        ? json_encode(array_values(array_filter(array_map('trim', $_POST['difficulties']), function($v) { return $v !== ''; }))) 
+        : json_encode([]);
+    $our_solution = isset($_POST['our_solution']) && is_array($_POST['our_solution']) 
+        ? json_encode(array_values(array_filter(array_map('trim', $_POST['our_solution']), function($v) { return $v !== ''; }))) 
+        : json_encode([]);
     $status = isset($_POST['status']) ? trim($_POST['status']) : 'Completed';
     $is_featured = isset($_POST['is_featured']) ? 1 : 0;
     
@@ -156,8 +162,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($action === 'add' || $action === '
 
         try {
             if ($action === 'add') {
-                $stmt = $pdo->prepare("INSERT INTO projects (name, category, location, year, description, floors, units, sq_ft, image_url, is_featured, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$name, $category, $location, $year, $description, $floors, $units, $sq_ft, $image_url, $is_featured, $status]);
+                $stmt = $pdo->prepare("INSERT INTO projects (name, category, location, year, description, floors, units, sq_ft, image_url, is_featured, status, difficulties, our_solution) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->execute([$name, $category, $location, $year, $description, $floors, $units, $sq_ft, $image_url, $is_featured, $status, $difficulties, $our_solution]);
                 $project_id = $pdo->lastInsertId();
                 if (!$msg) {
                     $msg = "Project added successfully.";
@@ -165,8 +171,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($action === 'add' || $action === '
                 }
                 $action = 'list';
             } else {
-                $stmt = $pdo->prepare("UPDATE projects SET name = ?, category = ?, location = ?, year = ?, description = ?, floors = ?, units = ?, sq_ft = ?, image_url = ?, is_featured = ?, status = ? WHERE id = ?");
-                $stmt->execute([$name, $category, $location, $year, $description, $floors, $units, $sq_ft, $image_url, $is_featured, $status, $id]);
+                $stmt = $pdo->prepare("UPDATE projects SET name = ?, category = ?, location = ?, year = ?, description = ?, floors = ?, units = ?, sq_ft = ?, image_url = ?, is_featured = ?, status = ?, difficulties = ?, our_solution = ? WHERE id = ?");
+                $stmt->execute([$name, $category, $location, $year, $description, $floors, $units, $sq_ft, $image_url, $is_featured, $status, $difficulties, $our_solution, $id]);
                 $project_id = $id;
                 if (!$msg) {
                     $msg = "Project updated successfully.";
@@ -409,10 +415,6 @@ if (($action === 'edit' || $action === 'view') && $id > 0) {
           <div class="meta-value"><?php echo htmlspecialchars($project['floors'] ?: 'N/A'); ?></div>
         </div>
         <div class="meta-item">
-          <div class="meta-label">Units</div>
-          <div class="meta-value"><?php echo htmlspecialchars($project['units'] ?: 'N/A'); ?></div>
-        </div>
-        <div class="meta-item">
           <div class="meta-label">Sq. Ft.</div>
           <div class="meta-value"><?php echo htmlspecialchars($project['sq_ft'] ?: 'N/A'); ?></div>
         </div>
@@ -423,7 +425,34 @@ if (($action === 'edit' || $action === 'view') && $id > 0) {
     <!-- RIGHT COLUMN -->
     <div class="detail-right-col">
       <div class="meta-label" style="margin-bottom: 10px; font-size: 15px;">Description</div>
-      <div class="message-body" style="font-size: 15px;"><?php echo htmlspecialchars($project['description']); ?></div>
+      <div class="message-body" style="font-size: 15px; margin-bottom: 20px;"><?php echo nl2br(htmlspecialchars($project['description'])); ?></div>
+
+      <div class="meta-label" style="margin-bottom: 15px; font-size: 15px;">Project Challenges & Solutions</div>
+      <?php 
+        $diffs = json_decode($project['difficulties'], true) ?: [];
+        $sols = json_decode($project['our_solution'], true) ?: [];
+        $pairCount = max(count($diffs), count($sols));
+      ?>
+      <?php if ($pairCount > 0): ?>
+        <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;">
+          <?php for ($i = 0; $i < $pairCount; $i++): ?>
+            <div style="background: rgba(0,0,0,0.1); border: 1px solid var(--border); border-radius: 8px; padding: 15px;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                  <div style="font-size: 13px; color: var(--gold); margin-bottom: 5px;">Difficulty <?php echo $i+1; ?></div>
+                  <div style="font-size: 14px;"><?php echo nl2br(htmlspecialchars($diffs[$i] ?? 'Not provided')); ?></div>
+                </div>
+                <div>
+                  <div style="font-size: 13px; color: #28a745; margin-bottom: 5px;">Solution <?php echo $i+1; ?></div>
+                  <div style="font-size: 14px;"><?php echo nl2br(htmlspecialchars($sols[$i] ?? 'Not provided')); ?></div>
+                </div>
+              </div>
+            </div>
+          <?php endfor; ?>
+        </div>
+      <?php else: ?>
+        <div class="message-body" style="font-size: 15px; margin-bottom: 20px; color: rgba(245,245,240,0.5);">No challenges provided.</div>
+      <?php endif; ?>
 
       <?php if (!empty($gallery_images)): ?>
         <div class="meta-label" style="margin-top: 20px; margin-bottom: 15px; font-size: 15px;">Gallery Images</div>
@@ -506,126 +535,204 @@ if (($action === 'edit' || $action === 'view') && $id > 0) {
 
 <!-- ── ADD / EDIT FORM ── -->
 <?php elseif ($action === 'add' || $action === 'edit'): ?>
-  <form action="projects.php?action=<?php echo $action; ?><?php echo ($action === 'edit') ? '&id=' . $id : ''; ?>" method="POST" enctype="multipart/form-data" class="admin-form">
-    <div class="form-group full-width">
-      <label for="name">Project Name <span style="color:var(--danger)">*</span></label>
-      <input type="text" id="name" name="name" value="<?php echo ($project) ? htmlspecialchars($project['name']) : ''; ?>" placeholder="e.g. Skyline Residences" required>
-    </div>
+  <form action="projects.php?action=<?php echo $action; ?><?php echo ($action === 'edit') ? '&id=' . $id : ''; ?>" method="POST" enctype="multipart/form-data" class="admin-form" style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; align-items: start; max-width: 100%;">
     
-    <div class="form-group">
-      <label for="category">Category <span style="color:var(--danger)">*</span></label>
-      <select id="category" name="category" required>
-        <option value="" disabled <?php echo (!$project) ? 'selected' : ''; ?>>Select category...</option>
-        <option value="Residential" <?php echo ($project && $project['category'] === 'Residential') ? 'selected' : ''; ?>>Residential</option>
-        <option value="Commercial" <?php echo ($project && $project['category'] === 'Commercial') ? 'selected' : ''; ?>>Commercial</option>
-        <option value="Renovation" <?php echo ($project && $project['category'] === 'Renovation') ? 'selected' : ''; ?>>Renovation</option>
-        <option value="Interior" <?php echo ($project && $project['category'] === 'Interior') ? 'selected' : ''; ?>>Interior</option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label for="status">Status <span style="color:var(--danger)">*</span></label>
-      <select id="status" name="status" required>
-        <option value="Upcoming" <?php echo ($project && ($project['status'] ?? '') === 'Upcoming') ? 'selected' : ''; ?>>Upcoming</option>
-        <option value="Ongoing" <?php echo ($project && ($project['status'] ?? '') === 'Ongoing') ? 'selected' : ''; ?>>Ongoing</option>
-        <option value="Completed" <?php echo (!$project || ($project['status'] ?? 'Completed') === 'Completed') ? 'selected' : ''; ?>>Completed</option>
-      </select>
-    </div>
-    
-    <div class="form-group">
-      <label for="year">Completion Year <span style="color:var(--danger)">*</span></label>
-      <input type="text" id="year" name="year" value="<?php echo ($project) ? htmlspecialchars($project['year']) : ''; ?>" placeholder="e.g. 2024" required>
-    </div>
-    
-    <div class="form-group">
-      <label for="location">Location <span style="color:var(--danger)">*</span></label>
-      <input type="text" id="location" name="location" value="<?php echo ($project) ? htmlspecialchars($project['location']) : ''; ?>" placeholder="e.g. Mumbai, MH" required>
-    </div>
-    
-    <div class="form-group">
-      <label for="sq_ft">Size / Sq. Ft.</label>
-      <input type="text" id="sq_ft" name="sq_ft" value="<?php echo ($project) ? htmlspecialchars($project['sq_ft']) : ''; ?>" placeholder="e.g. 1.8M or 6,000">
-    </div>
-    
-    <div class="form-group">
-      <label for="floors">Floors Count</label>
-      <input type="text" id="floors" name="floors" value="<?php echo ($project) ? htmlspecialchars($project['floors']) : ''; ?>" placeholder="e.g. 24 (or leave blank)">
-    </div>
-    
-    <div class="form-group">
-      <label for="units">Units Count</label>
-      <input type="text" id="units" name="units" value="<?php echo ($project) ? htmlspecialchars($project['units']) : ''; ?>" placeholder="e.g. 180 (or leave blank)">
-    </div>
-    
-    <div class="form-group full-width">
-      <label for="description">Project Description <span style="color:var(--danger)">*</span></label>
-      <textarea id="description" name="description" rows="6" placeholder="Write a detailed description of the project..." required><?php echo ($project) ? htmlspecialchars($project['description']) : ''; ?></textarea>
-    </div>
-    
-    <div class="form-group full-width" style="margin-top: 10px;">
-      <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text);">
-        <input type="checkbox" name="is_featured" value="1" <?php echo ($project && isset($project['is_featured']) && $project['is_featured']) ? 'checked' : ''; ?> style="width: 16px; height: 16px; accent-color: var(--gold);">
-        Feature on Landing Page (Max 6 projects)
-      </label>
-    </div>
-    
-    <div class="form-group full-width" style="border-top: 1px solid rgba(245,245,240,0.1); padding-top: 20px;">
-      <label>Cover Image (Required)</label>
+    <!-- LEFT COLUMN: Basic Details -->
+    <div style="background: var(--nav-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 20px;">
       
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 5px;">
-        <div>
-          <label for="image_file" style="color: rgba(245,245,240,0.6); font-size:12px;">Upload Cover Image:</label>
-          <input type="file" id="image_file" name="image_file" accept="image/*" style="display:block; margin-top:8px;">
+      <div class="form-group" style="margin-bottom: 0;">
+        <label for="name">Project Name <span style="color:var(--danger)">*</span></label>
+        <input type="text" id="name" name="name" value="<?php echo ($project) ? htmlspecialchars($project['name']) : ''; ?>" placeholder="e.g. Skyline Residences" required>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 0;">
+        <label for="category">Category <span style="color:var(--danger)">*</span></label>
+        <select id="category" name="category" required>
+          <option value="" disabled <?php echo (!$project) ? 'selected' : ''; ?>>Select category...</option>
+          <option value="Residential" <?php echo ($project && $project['category'] === 'Residential') ? 'selected' : ''; ?>>Residential</option>
+          <option value="Commercial" <?php echo ($project && $project['category'] === 'Commercial') ? 'selected' : ''; ?>>Commercial</option>
+          <option value="Renovation" <?php echo ($project && $project['category'] === 'Renovation') ? 'selected' : ''; ?>>Renovation</option>
+          <option value="Interior" <?php echo ($project && $project['category'] === 'Interior') ? 'selected' : ''; ?>>Interior</option>
+        </select>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 0;">
+        <label for="status">Status <span style="color:var(--danger)">*</span></label>
+        <select id="status" name="status" required>
+          <option value="Upcoming" <?php echo ($project && ($project['status'] ?? '') === 'Upcoming') ? 'selected' : ''; ?>>Upcoming</option>
+          <option value="Ongoing" <?php echo ($project && ($project['status'] ?? '') === 'Ongoing') ? 'selected' : ''; ?>>Ongoing</option>
+          <option value="Completed" <?php echo (!$project || ($project['status'] ?? 'Completed') === 'Completed') ? 'selected' : ''; ?>>Completed</option>
+        </select>
+      </div>
+      
+      <div class="form-group" style="margin-bottom: 0;">
+        <label for="location">Location <span style="color:var(--danger)">*</span></label>
+        <input type="text" id="location" name="location" value="<?php echo ($project) ? htmlspecialchars($project['location']) : ''; ?>" placeholder="e.g. Mumbai, MH" required>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label for="year">Completion Year <span style="color:var(--danger)">*</span></label>
+        <input type="text" id="year" name="year" value="<?php echo ($project) ? htmlspecialchars($project['year']) : ''; ?>" placeholder="e.g. 2024" required>
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="sq_ft">Size / Sq. Ft.</label>
+          <input type="text" id="sq_ft" name="sq_ft" value="<?php echo ($project) ? htmlspecialchars($project['sq_ft']) : ''; ?>" placeholder="e.g. 1.8M or 6,000">
         </div>
-        <div>
-          <label for="image_url" style="color: rgba(245,245,240,0.6); font-size:12px;">Or Paste URL:</label>
-          <input type="url" id="image_url" name="image_url" value="<?php echo ($project) ? htmlspecialchars($project['image_url']) : ''; ?>" placeholder="e.g. https://images.unsplash.com/photo-..." style="margin-top:8px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="floors">Total Floors</label>
+          <input type="text" id="floors" name="floors" value="<?php echo ($project) ? htmlspecialchars($project['floors']) : ''; ?>" placeholder="e.g. 24">
         </div>
       </div>
 
-      <?php if ($project && $project['image_url']): ?>
-        <div style="margin-top: 10px; font-size: 13px; color: rgba(245,245,240,0.6);">
-          Current Cover Image:<br/>
-          <?php 
-            $current_src = (strpos($project['image_url'], 'http') === 0) ? $project['image_url'] : '../../' . $project['image_url'];
-          ?>
-          <img src="<?php echo htmlspecialchars($current_src); ?>" alt="Current cover" style="max-width: 200px; margin-top: 5px; border-radius: 4px; border: 1px solid var(--border);">
-        </div>
-      <?php endif; ?>
+      <div class="form-group" style="margin-bottom: 0; padding-top: 10px;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text);">
+          <input type="checkbox" name="is_featured" value="1" <?php echo ($project && isset($project['is_featured']) && $project['is_featured']) ? 'checked' : ''; ?> style="width: 16px; height: 16px; accent-color: var(--gold);">
+          Feature on Landing Page
+        </label>
+      </div>
+
     </div>
 
-    <!-- Gallery Images Upload Section -->
-    <div class="form-group full-width" style="margin-top: 10px;">
-      <label>Gallery Images (Optional)</label>
-      <div style="margin-top: 5px;">
-        <label for="gallery_files" style="color: rgba(245,245,240,0.6); font-size:12px;">Upload Multiple Additional Images (Hold CTRL/CMD to select multiple):</label>
-        <input type="file" id="gallery_files" name="gallery_files[]" multiple accept="image/*" style="display:block; margin-top:8px;">
-      </div>
+    <!-- RIGHT COLUMN: Content & Media -->
+    <div style="background: var(--nav-bg); padding: 30px; border-radius: 12px; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 20px;">
       
-      <!-- Display Existing Gallery Images -->
-      <?php if (!empty($gallery_images)): ?>
-        <div style="margin-top: 15px;">
-          <div style="font-size: 13px; color: rgba(245,245,240,0.6); margin-bottom: 10px;">Current Gallery Images:</div>
-          <div style="display: flex; flex-wrap: wrap; gap: 15px;">
-            <?php foreach ($gallery_images as $img): ?>
-              <div style="position: relative; width: 120px;">
-                <?php $galSrc = (strpos($img['image_url'], 'http') === 0) ? $img['image_url'] : '../../' . $img['image_url']; ?>
-                <img src="<?php echo htmlspecialchars($galSrc); ?>" style="width: 120px; height: 90px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">
-                <a href="projects.php?action=delete_image&image_id=<?php echo $img['id']; ?>&id=<?php echo $id; ?>" 
-                   onclick="return confirm('Delete this gallery image?');"
-                   style="position: absolute; top: 4px; right: 4px; background: rgba(220,53,69,0.9); color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 14px;" title="Delete">
-                   &times;
-                </a>
-              </div>
-            <?php endforeach; ?>
+      <div class="form-group" style="margin-bottom: 0;">
+        <label>Cover Image (Required)</label>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 5px;">
+          <div>
+            <label for="image_file" style="color: rgba(245,245,240,0.6); font-size:12px;">Upload File:</label>
+            <input type="file" id="image_file" name="image_file" accept="image/*" style="display:block; margin-top:8px;">
+          </div>
+          <div>
+            <label for="image_url" style="color: rgba(245,245,240,0.6); font-size:12px;">Or Paste URL:</label>
+            <input type="url" id="image_url" name="image_url" value="<?php echo ($project) ? htmlspecialchars($project['image_url']) : ''; ?>" placeholder="e.g. https://images..." style="margin-top:8px;">
           </div>
         </div>
-      <?php endif; ?>
-    </div>
-    
-    <div class="full-width form-actions">
-      <a href="projects.php" class="btn-outline">Cancel</a>
-      <button type="submit" class="btn-gold">Save Project</button>
+
+        <?php if ($project && $project['image_url']): ?>
+          <div style="margin-top: 10px; font-size: 13px; color: rgba(245,245,240,0.6);">
+            Current Cover:<br/>
+            <?php $current_src = (strpos($project['image_url'], 'http') === 0) ? $project['image_url'] : '../../' . $project['image_url']; ?>
+            <img src="<?php echo htmlspecialchars($current_src); ?>" style="max-width: 150px; margin-top: 5px; border-radius: 4px; border: 1px solid var(--border);">
+          </div>
+        <?php endif; ?>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 0;">
+        <label for="description">Project Description <span style="color:var(--danger)">*</span></label>
+        <textarea id="description" name="description" rows="5" placeholder="Write a detailed description of the project..." required><?php echo ($project) ? htmlspecialchars($project['description']) : ''; ?></textarea>
+      </div>
+
+      <div id="challenges-container" style="display: flex; flex-direction: column; gap: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <label style="margin-bottom: 0; font-size: 15px; font-weight: 500;">Difficulties & Solutions</label>
+          <button type="button" id="add-challenge-btn" class="btn-outline" style="padding: 5px 10px; font-size: 13px;">+ Add Pair</button>
+        </div>
+        
+        <?php 
+          $diffs = $project ? (json_decode($project['difficulties'], true) ?: []) : [];
+          $sols = $project ? (json_decode($project['our_solution'], true) ?: []) : [];
+          $pairCount = max(count($diffs), count($sols), 1); // at least 1
+          
+          for ($i = 0; $i < $pairCount; $i++): 
+        ?>
+        <div class="challenge-pair" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: rgba(0,0,0,0.1); padding: 15px; border-radius: 8px; border: 1px solid var(--border); position: relative;">
+          <?php if ($i > 0): ?>
+            <button type="button" class="remove-pair-btn" style="position: absolute; top: 5px; right: 5px; background: rgba(220,53,69,0.9); color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 14px; border: none; cursor: pointer;">&times;</button>
+          <?php endif; ?>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>Difficulty <span class="pair-idx"><?php echo $i+1; ?></span></label>
+            <textarea name="difficulties[]" rows="4" placeholder="What were the main challenges faced?"><?php echo htmlspecialchars($diffs[$i] ?? ''); ?></textarea>
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label>Solution <span class="pair-idx"><?php echo $i+1; ?></span></label>
+            <textarea name="our_solution[]" rows="4" placeholder="How did we solve the challenges?"><?php echo htmlspecialchars($sols[$i] ?? ''); ?></textarea>
+          </div>
+        </div>
+        <?php endfor; ?>
+      </div>
+      
+      <script>
+        document.getElementById('add-challenge-btn').addEventListener('click', function() {
+          const container = document.getElementById('challenges-container');
+          const pairs = container.querySelectorAll('.challenge-pair');
+          const index = pairs.length + 1;
+          
+          const div = document.createElement('div');
+          div.className = 'challenge-pair';
+          div.style.cssText = 'display: grid; grid-template-columns: 1fr 1fr; gap: 20px; background: rgba(0,0,0,0.1); padding: 15px; border-radius: 8px; border: 1px solid var(--border); position: relative;';
+          
+          div.innerHTML = `
+            <button type="button" class="remove-pair-btn" style="position: absolute; top: 5px; right: 5px; background: rgba(220,53,69,0.9); color: #fff; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 14px; border: none; cursor: pointer;">&times;</button>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>Difficulty <span class="pair-idx">${index}</span></label>
+              <textarea name="difficulties[]" rows="4" placeholder="What were the main challenges faced?"></textarea>
+            </div>
+            <div class="form-group" style="margin-bottom: 0;">
+              <label>Solution <span class="pair-idx">${index}</span></label>
+              <textarea name="our_solution[]" rows="4" placeholder="How did we solve the challenges?"></textarea>
+            </div>
+          `;
+          
+          div.querySelector('.remove-pair-btn').addEventListener('click', function() {
+            div.remove();
+            updateChallengeLabels();
+          });
+          
+          container.appendChild(div);
+        });
+
+        document.querySelectorAll('.remove-pair-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            this.closest('.challenge-pair').remove();
+            updateChallengeLabels();
+          });
+        });
+
+        function updateChallengeLabels() {
+          const pairs = document.querySelectorAll('.challenge-pair');
+          pairs.forEach((pair, idx) => {
+            const spans = pair.querySelectorAll('.pair-idx');
+            if (spans.length >= 2) {
+              spans[0].innerText = idx + 1;
+              spans[1].innerText = idx + 1;
+            }
+          });
+        }
+      </script>
+
+      <div class="form-group" style="margin-bottom: 0; padding-top: 10px; border-top: 1px solid rgba(245,245,240,0.1);">
+        <label>Gallery Images (Optional)</label>
+        <div style="margin-top: 5px;">
+          <label for="gallery_files" style="color: rgba(245,245,240,0.6); font-size:12px;">Upload Multiple Additional Images:</label>
+          <input type="file" id="gallery_files" name="gallery_files[]" multiple accept="image/*" style="display:block; margin-top:8px;">
+        </div>
+        
+        <?php if (!empty($gallery_images)): ?>
+          <div style="margin-top: 15px;">
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+              <?php foreach ($gallery_images as $img): ?>
+                <div style="position: relative; width: 80px;">
+                  <?php $galSrc = (strpos($img['image_url'], 'http') === 0) ? $img['image_url'] : '../../' . $img['image_url']; ?>
+                  <img src="<?php echo htmlspecialchars($galSrc); ?>" style="width: 80px; height: 60px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border);">
+                  <a href="projects.php?action=delete_image&image_id=<?php echo $img['id']; ?>&id=<?php echo $id; ?>" 
+                     onclick="return confirm('Delete this image?');"
+                     style="position: absolute; top: 2px; right: 2px; background: rgba(220,53,69,0.9); color: #fff; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; font-size: 12px;">&times;</a>
+                </div>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        <?php endif; ?>
+      </div>
+
+      <!-- Action Buttons -->
+      <div style="margin-top: auto; padding-top: 20px; display: flex; gap: 15px; justify-content: flex-end;">
+        <a href="projects.php" class="btn-outline" style="font-size: 16px; padding: 12px 24px;">Cancel</a>
+        <button type="submit" class="btn-gold" style="font-size: 16px; padding: 12px 24px;">Save Project</button>
+      </div>
+
     </div>
   </form>
 <?php endif; ?>

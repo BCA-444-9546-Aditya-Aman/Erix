@@ -110,50 +110,20 @@ try {
                 ?>
               </p>
               <div class="project-footer">
-                <?php if ($proj['floors']): ?>
-                  <div class="project-stat">
-                    <?php 
-                      $val = $proj['floors'];
-                      $key = 'Floors';
-                      if (preg_match('/^(\d+)\s+(.+)$/', $val, $matches)) {
-                          $val = $matches[1];
-                          $key = $matches[2];
-                      }
-                    ?>
-                    <span class="project-stat-val"><?php echo htmlspecialchars($val); ?></span>
-                    <span class="project-stat-key"><?php echo htmlspecialchars($key); ?></span>
-                  </div>
-                <?php endif; ?>
+                <div class="project-stat">
+                  <span class="project-stat-val"><?php echo htmlspecialchars($proj['year'] ?: 'N/A'); ?></span>
+                  <span class="project-stat-key">Timeline</span>
+                </div>
                 
-                <?php if ($proj['sq_ft']): ?>
-                  <div class="project-stat">
-                    <?php 
-                      $val = $proj['sq_ft'];
-                      $key = 'Sq. Ft.';
-                      if (preg_match('/^([\d\.\w\+]+)\s*(.+)$/', $val, $matches)) {
-                          $val = $matches[1];
-                          $key = $matches[2];
-                      }
-                    ?>
-                    <span class="project-stat-val"><?php echo htmlspecialchars($val); ?></span>
-                    <span class="project-stat-key"><?php echo htmlspecialchars($key); ?></span>
-                  </div>
-                <?php endif; ?>
+                <div class="project-stat">
+                  <span class="project-stat-val"><?php echo htmlspecialchars($proj['sq_ft'] ?: 'N/A'); ?></span>
+                  <span class="project-stat-key">Area</span>
+                </div>
 
-                <?php if ($proj['units']): ?>
-                  <div class="project-stat">
-                    <?php 
-                      $val = $proj['units'];
-                      $key = 'Units';
-                      if (preg_match('/^([\d\.\w\+]+)\s*(.+)$/', $val, $matches)) {
-                          $val = $matches[1];
-                          $key = $matches[2];
-                      }
-                    ?>
-                    <span class="project-stat-val"><?php echo htmlspecialchars($val); ?></span>
-                    <span class="project-stat-key"><?php echo htmlspecialchars($key); ?></span>
-                  </div>
-                <?php endif; ?>
+                <div class="project-stat">
+                  <span class="project-stat-val"><?php echo htmlspecialchars($proj['floors'] ?: 'N/A'); ?></span>
+                  <span class="project-stat-key">Total Floor Count</span>
+                </div>
                 
                 <span class="project-arrow-link">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>

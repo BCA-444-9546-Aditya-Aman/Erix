@@ -6,7 +6,10 @@ USE `erix_db`;
 CREATE TABLE IF NOT EXISTS `admin_users` (
   `id` INT AUTO_INCREMENT PRIMARY KEY,
   `username` VARCHAR(50) NOT NULL UNIQUE,
+  `email` VARCHAR(150) DEFAULT NULL,
   `password` VARCHAR(255) NOT NULL,
+  `is_superadmin` TINYINT(1) DEFAULT 0,
+  `permissions` TEXT DEFAULT NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -24,6 +27,8 @@ CREATE TABLE IF NOT EXISTS `projects` (
   `image_url` VARCHAR(255) DEFAULT NULL,
   `is_featured` TINYINT(1) DEFAULT 0,
   `status` VARCHAR(50) DEFAULT 'Completed',
+  `difficulties` TEXT DEFAULT NULL,
+  `our_solution` TEXT DEFAULT NULL,
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

@@ -11,13 +11,25 @@ if (nav) {
 }
 
   // Hamburger (mobile)
-  document.getElementById('hamburger').addEventListener('click', function() {
-    const links = document.querySelector('.nav-links');
-    const open = links.style.display === 'flex';
-    links.style.cssText = open
-      ? ''
-      : 'display:flex;flex-direction:column;position:fixed;top:80px;left:0;right:0;background:rgba(13,13,13,0.97);padding:32px 5%;gap:24px;border-bottom:1px solid rgba(212,160,23,0.2)';
-  });
+  const hamburger = document.getElementById('hamburger');
+  const navLinks = document.querySelector('.nav-links');
+  const sidebarOverlay = document.getElementById('user-sidebar-overlay');
+  
+  if (hamburger) {
+    hamburger.addEventListener('click', function() {
+      hamburger.classList.toggle('active');
+      if (navLinks) navLinks.classList.toggle('active');
+      if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
+    });
+  }
+
+  if (sidebarOverlay) {
+    sidebarOverlay.addEventListener('click', function() {
+      hamburger.classList.remove('active');
+      if (navLinks) navLinks.classList.remove('active');
+      sidebarOverlay.classList.remove('active');
+    });
+  }
 
 
   
@@ -246,7 +258,7 @@ if (nav) {
     const message = fields.message ? fields.message.trim() : '';
 
     if (!name || name.length < 2) errors.name = 'Please enter your full name (at least 2 characters).';
-    if (!phone || !/^[\d\s\+\-\(\)]{7,15}$/.test(phone)) errors.phone = 'Please enter a valid phone number.';
+    if (!phone || !/^\d{10}$/.test(phone.replace(/\D/g, ''))) errors.phone = 'Please enter a valid 10-digit phone number.';
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) errors.email = 'Please enter a valid email address.';
     if (!service) errors.service = 'Please select a service.';
     if (!message || message.length < 10) errors.message = 'Please enter a message (at least 10 characters).';
@@ -639,7 +651,7 @@ if (nav) {
                 </div>
                 <div class="form-group">
                   <label for="pphone">Phone Number</label>
-                  <input type="tel" id="pphone" name="phone" placeholder="+91 00000 00000" required/>
+                  <input type="tel" id="pphone" name="phone" placeholder="Enter 10-digit phone number" pattern="[0-9]{10}" maxlength="10" title="Please enter a valid 10-digit phone number" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required/>
                 </div>
               </div>
               <div class="form-group">

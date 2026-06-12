@@ -11,13 +11,13 @@ if (isset($_SESSION['admin_logged']) && $_SESSION['admin_logged'] === true) {
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username']);
+    $email = trim($_POST['email']);
     $password = trim($_POST['password']);
 
-    if (!empty($username) && !empty($password)) {
+    if (!empty($email) && !empty($password)) {
         try {
-            $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE username = ?");
-            $stmt->execute([$username]);
+            $stmt = $pdo->prepare("SELECT * FROM admin_users WHERE email = ?");
+            $stmt->execute([$email]);
             $user = $stmt->fetch();
 
             if ($user && password_verify($password, $user['password'])) {
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 header("Location: index.php");
                 exit;
             } else {
-                $error = 'Invalid username or password.';
+                $error = 'Invalid email or password.';
             }
         } catch (\PDOException $e) {
             $error = 'Database error occurred: ' . $e->getMessage();
@@ -352,8 +352,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     <form action="login.php" method="POST">
       <div class="form-group">
-        <label for="username">Username</label>
-        <input type="text" id="username" name="username" placeholder="Enter admin username" required autocomplete="off">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="Enter admin email" required autocomplete="email">
       </div>
       
       <div class="form-group">

@@ -55,3 +55,9 @@ Options -Indexes
     AddOutputFilterByType DEFLATE application/javascript
     AddOutputFilterByType DEFLATE application/x-javascript
 </IfModule>
+
+# 7. Custom Error Pages
+ErrorDocument 400 /Erix/error.php?code=400
+ErrorDocument 403 /Erix/error.php?code=403
+ErrorDocument 404 /Erix/error.php?code=404
+ErrorDocument 500 /Erix/error.php?code=500

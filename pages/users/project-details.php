@@ -134,24 +134,24 @@ include '../includes/header.php';
         <span class="meta-value"><?php echo htmlspecialchars($project ? $project['location'] : 'N/A'); ?></span>
       </div>
       <div class="meta-item">
-        <span class="meta-label">Client</span>
-        <span class="meta-value">Erix Construction Client</span>
+        <span class="meta-label">Status</span>
+        <span class="meta-value"><?php echo htmlspecialchars($project && isset($project['status']) ? $project['status'] : 'Completed'); ?></span>
       </div>
       <div class="meta-item">
         <span class="meta-label">Project Type</span>
         <span class="meta-value"><?php echo htmlspecialchars($project ? $project['category'] : 'N/A'); ?></span>
       </div>
       <div class="meta-item">
+        <span class="meta-label">Timeline (Year)</span>
+        <span class="meta-value"><?php echo htmlspecialchars($project ? $project['year'] : 'N/A'); ?></span>
+      </div>
+      <div class="meta-item">
         <span class="meta-label">Built Area</span>
         <span class="meta-value"><?php echo htmlspecialchars($project && $project['sq_ft'] ? $project['sq_ft'] : 'N/A'); ?></span>
       </div>
       <div class="meta-item">
-        <span class="meta-label">Status</span>
-        <span class="meta-value"><?php echo htmlspecialchars($project && isset($project['status']) ? $project['status'] : 'Completed'); ?></span>
-      </div>
-      <div class="meta-item">
-        <span class="meta-label">Year Completed</span>
-        <span class="meta-value"><?php echo htmlspecialchars($project ? $project['year'] : 'N/A'); ?></span>
+        <span class="meta-label">Total Floor Count</span>
+        <span class="meta-value"><?php echo htmlspecialchars($project && $project['floors'] ? $project['floors'] : 'N/A'); ?></span>
       </div>
     </div>
 
@@ -171,66 +171,45 @@ include '../includes/header.php';
     </div>
 
     <!-- Difficulties & Solutions Section -->
+    <?php 
+      $diffs = $project ? (is_string($project['difficulties']) ? json_decode($project['difficulties'], true) : []) : [];
+      $sols = $project ? (is_string($project['our_solution']) ? json_decode($project['our_solution'], true) : []) : [];
+      if (!is_array($diffs)) $diffs = [];
+      if (!is_array($sols)) $sols = [];
+      $pairCount = max(count($diffs), count($sols));
+    ?>
+    <?php if ($pairCount > 0): ?>
     <div class="challenges-section">
       <h2 class="challenges-section-title">Difficulties & <span>How We Overcame Them</span></h2>
       <div class="challenges-grid">
         
-        <!-- Challenge 1 -->
-        <div class="challenge-card">
-          <span class="card-badge badge-difficulty">Difficulty</span>
-          <h3 class="card-title">Congested Urban Site & Logistics Constraints</h3>
-          <p class="card-text">
-            The site was located in a highly dense, high-traffic commercial corridor with strict municipal constraints regarding noise levels, working hours, and heavy equipment access. Space was extremely limited, leaving virtually zero area for local material staging or storage.
-          </p>
-        </div>
-        
-        <!-- Solution 1 -->
-        <div class="challenge-card">
-          <span class="card-badge badge-solution">Our Solution</span>
-          <h3 class="card-title">Just-in-Time Material Logistics & Night Ops</h3>
-          <p class="card-text">
-            We implemented a custom "Just-in-Time" (JIT) material delivery plan driven by real-time tracking software. Heavy steel trusses and structural precast components were brought in and lifted directly from trailers into place during pre-coordinated night windows, eliminating on-site storage issues completely.
-          </p>
-        </div>
+        <?php for ($i = 0; $i < $pairCount; $i++): ?>
+          
+          <?php if (!empty(trim($diffs[$i] ?? ''))): ?>
+          <div class="challenge-card">
+            <span class="card-badge badge-difficulty">Difficulty <?php echo $i+1; ?></span>
+            <h3 class="card-title">Project Challenge</h3>
+            <div class="card-text">
+              <?php echo nl2br(htmlspecialchars($diffs[$i])); ?>
+            </div>
+          </div>
+          <?php endif; ?>
+          
+          <?php if (!empty(trim($sols[$i] ?? ''))): ?>
+          <div class="challenge-card">
+            <span class="card-badge badge-solution">Our Solution</span>
+            <h3 class="card-title">Strategic Execution</h3>
+            <div class="card-text">
+              <?php echo nl2br(htmlspecialchars($sols[$i])); ?>
+            </div>
+          </div>
+          <?php endif; ?>
 
-        <!-- Challenge 2 -->
-        <div class="challenge-card">
-          <span class="card-badge badge-difficulty">Difficulty</span>
-          <h3 class="card-title">High Water Table & Loose Subsurface Soil</h3>
-          <p class="card-text">
-            Excavation for the triple-level underground parking basement faced heavy groundwater infiltration due to the close proximity to coastal channels. The loose alluvial soil conditions made traditional soil-retaining methods highly unsafe.
-          </p>
-        </div>
-        
-        <!-- Solution 2 -->
-        <div class="challenge-card">
-          <span class="card-badge badge-solution">Our Solution</span>
-          <h3 class="card-title">Secant Pile Wall & Deep Dewatering Wells</h3>
-          <p class="card-text">
-            Our geotechnical engineers constructed a continuous interlocking Secant Pile Wall around the site boundary to act as a watertight barrier. We then deployed a computerized deep-well dewatering system coupled with high-flow pumps to temporarily lower the water table within the excavation boundary during basement foundation concreting.
-          </p>
-        </div>
-
-        <!-- Challenge 3 -->
-        <div class="challenge-card">
-          <span class="card-badge badge-difficulty">Difficulty</span>
-          <h3 class="card-title">Heavy Monsoon Weather Disruptions</h3>
-          <p class="card-text">
-            Peak concrete structural pours for the upper tower columns coincided with the heavy Mumbai monsoon season, threatening structural curing quality and creating unsafe wet conditions for high-altitude exterior glazing installation.
-          </p>
-        </div>
-        
-        <!-- Solution 3 -->
-        <div class="challenge-card">
-          <span class="card-badge badge-solution">Our Solution</span>
-          <h3 class="card-title">Monsoon Tarpaulin Cocoons & Special Concrete Mixes</h3>
-          <p class="card-text">
-            We built structural tarpaulin cocoons around the active casting decks to shield the pouring sites. We adjusted the concrete mix designs by using rapid-hardening admixtures and silica-fume additives to guarantee structural curing strength under constant high humidity, keeping the schedule entirely on track.
-          </p>
-        </div>
+        <?php endfor; ?>
 
       </div>
     </div>
+    <?php endif; ?>
 
   </section>
 

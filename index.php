@@ -175,12 +175,6 @@ try {
           if (strpos($imageSrc, 'http') !== 0) {
               $imageSrc = $pathPrefix . $imageSrc;
           }
-          $s1val = $proj['floors']; $s1key = 'Floors';
-          if ($s1val && preg_match('/^([\d\.★\w\+]+)\s+(.+)$/', $s1val, $m)) { $s1val = $m[1]; $s1key = $m[2]; }
-          $s3val = $proj['sq_ft']; $s3key = 'Sq. Ft.';
-          if ($s3val && preg_match('/^([\d\.★\w\+]+)\s+(.+)$/', $s3val, $m)) { $s3val = $m[1]; $s3key = $m[2]; }
-          $s2val = $proj['units']; $s2key = 'Units';
-          if ($s2val && preg_match('/^([\d\.★\w\+]+)\s+(.+)$/', $s2val, $m)) { $s2val = $m[1]; $s2key = $m[2]; }
           $excerpt = $proj['description'];
           if (strlen($excerpt) > 120) $excerpt = substr($excerpt, 0, 117) . '...';
         ?>
@@ -201,24 +195,20 @@ try {
             <h3 class="project-name"><?php echo htmlspecialchars($proj['name']); ?></h3>
             <p class="project-desc"><?php echo htmlspecialchars($excerpt); ?></p>
             <div class="project-footer">
-              <?php if ($s1val): ?>
               <div class="project-stat">
-                <span class="project-stat-val"><?php echo htmlspecialchars($s1val); ?></span>
-                <span class="project-stat-key"><?php echo htmlspecialchars($s1key); ?></span>
+                <span class="project-stat-val"><?php echo htmlspecialchars($proj['year'] ?: 'N/A'); ?></span>
+                <span class="project-stat-key">Timeline</span>
               </div>
-              <?php endif; ?>
-              <?php if ($s3val): ?>
+              
               <div class="project-stat">
-                <span class="project-stat-val"><?php echo htmlspecialchars($s3val); ?></span>
-                <span class="project-stat-key"><?php echo htmlspecialchars($s3key); ?></span>
+                <span class="project-stat-val"><?php echo htmlspecialchars($proj['sq_ft'] ?: 'N/A'); ?></span>
+                <span class="project-stat-key">Area</span>
               </div>
-              <?php endif; ?>
-              <?php if ($s2val): ?>
+
               <div class="project-stat">
-                <span class="project-stat-val"><?php echo htmlspecialchars($s2val); ?></span>
-                <span class="project-stat-key"><?php echo htmlspecialchars($s2key); ?></span>
+                <span class="project-stat-val"><?php echo htmlspecialchars($proj['floors'] ?: 'N/A'); ?></span>
+                <span class="project-stat-key">Total Floor Count</span>
               </div>
-              <?php endif; ?>
               <span class="project-arrow-link">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
               </span>

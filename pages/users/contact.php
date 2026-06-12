@@ -75,7 +75,7 @@ include '../includes/header.php';
             </div>
             <div class="form-group">
               <label for="fphone">Phone Number</label>
-              <input type="tel" id="fphone" name="phone" placeholder="+91 00000 00000" required/>
+              <input type="tel" id="fphone" name="phone" placeholder="Enter 10-digit phone number" pattern="[0-9]{10}" maxlength="10" title="Please enter a valid 10-digit phone number" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 10);" required/>
             </div>
           </div>
           <div class="form-group">
