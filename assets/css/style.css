@@ -3879,3 +3879,265 @@
     padding: 20px;
   }
 }
+  /* -- ERROR PAGE CSS -- */
+  body.error-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* background glow blobs */
+  .error-page .bg-blob {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .error-page .bg-blob-1 {
+    width: 600px; height: 600px;
+    top: 0px; left: -200px;
+    background: radial-gradient(circle, rgba(212,160,23,0.07) 0%, transparent 70%);
+  }
+  .error-page .bg-blob-2 {
+    width: 500px; height: 500px;
+    bottom: -180px; right: -150px;
+    background: radial-gradient(circle, rgba(212,160,23,0.05) 0%, transparent 70%);
+  }
+
+  /* subtle grid lines */
+  body.error-page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(212,160,23,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,160,23,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  .error-page .page-wrap {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 40px 24px;
+    max-width: 680px;
+    width: 100%;
+  }
+
+  /* -- EXCAVATOR SVG SCENE -- */
+  .error-page .excavator-wrap {
+    width: 100%;
+    max-width: 480px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  /* Ground shake on snore */
+  @keyframes groundShake {
+    0%,100% { transform: translateX(0); }
+    25%      { transform: translateX(-3px); }
+    75%      { transform: translateX(3px); }
+  }
+
+  /* Body bob — gentle breathing */
+  @keyframes bodyBob {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-4px); }
+  }
+
+  /* Arm droop sway */
+  @keyframes armSway {
+    0%,100% { transform: rotate(0deg); }
+    50%      { transform: rotate(-4deg); }
+  }
+
+  /* ZZZ float up */
+  @keyframes zFloat {
+    0%   { opacity: 0; transform: translate(0, 0)   scale(0.6); }
+    20%  { opacity: 1; }
+    80%  { opacity: 0.8; }
+    100% { opacity: 0; transform: translate(-18px, -55px) scale(1.1); }
+  }
+
+  @keyframes zFloat2 {
+    0%   { opacity: 0; transform: translate(0, 0)   scale(0.5); }
+    20%  { opacity: 1; }
+    80%  { opacity: 0.7; }
+    100% { opacity: 0; transform: translate(-28px, -70px) scale(1.2); }
+  }
+
+  @keyframes zFloat3 {
+    0%   { opacity: 0; transform: translate(0, 0)   scale(0.4); }
+    20%  { opacity: 1; }
+    80%  { opacity: 0.6; }
+    100% { opacity: 0; transform: translate(-40px, -90px) scale(1.4); }
+  }
+
+  /* Coffee drip */
+  @keyframes drip {
+    0%,40% { transform: scaleY(0); transform-origin: top; opacity: 0; }
+    50%     { opacity: 1; transform: scaleY(1); }
+    80%     { opacity: 1; transform: scaleY(1) translateY(10px); }
+    100%    { opacity: 0; transform: scaleY(0.8) translateY(18px); }
+  }
+
+  /* Hat tilt */
+  @keyframes hatTilt {
+    0%,100% { transform: rotate(0deg); }
+    50%      { transform: rotate(5deg); }
+  }
+
+  /* Eye closed twitch */
+  @keyframes eyeTwitch {
+    0%,90%,100% { transform: scaleY(1); }
+    95%          { transform: scaleY(1.6); }
+  }
+
+  /* Wake up — applied via JS */
+  @keyframes wakeJolt {
+    0%   { transform: rotate(0deg) translateY(0); }
+    15%  { transform: rotate(-8deg) translateY(-12px); }
+    30%  { transform: rotate(6deg) translateY(-6px); }
+    50%  { transform: rotate(-4deg) translateY(-4px); }
+    70%  { transform: rotate(2deg) translateY(-2px); }
+    100% { transform: rotate(0deg) translateY(0); }
+  }
+
+  @keyframes armFlail {
+    0%   { transform: rotate(0deg); }
+    20%  { transform: rotate(-40deg); }
+    45%  { transform: rotate(30deg); }
+    70%  { transform: rotate(-20deg); }
+    100% { transform: rotate(0deg); }
+  }
+
+  @keyframes eyeOpen {
+    0%,100% { transform: scaleY(1); }
+    10%,30% { transform: scaleY(3); }
+    20%     { transform: scaleY(0.3); }
+  }
+
+  /* animated parts */
+  #excBody    { animation: bodyBob 3.5s ease-in-out infinite; transform-origin: center bottom; }
+  #excArm     { animation: armSway 3.5s ease-in-out infinite; transform-origin: 285px 195px; }
+  #excHat     { animation: hatTilt 3.5s ease-in-out infinite; transform-origin: 220px 108px; }
+  #excGround  { animation: groundShake 3.5s ease-in-out infinite; }
+  #excLeftEye { animation: eyeTwitch 3.5s ease-in-out infinite; transform-origin: 196px 168px; }
+  #zz1 { animation: zFloat  3.5s ease-in-out infinite 0s; }
+  #zz2 { animation: zFloat2 3.5s ease-in-out infinite 0.7s; }
+  #zz3 { animation: zFloat3 3.5s ease-in-out infinite 1.4s; }
+  #coffeeDrip { animation: drip 3.5s ease-in-out infinite; }
+
+  /* wake state */
+  .woken #excBody { animation: wakeJolt 0.8s ease-out forwards; }
+  .woken #excArm  { animation: armFlail 0.8s ease-out forwards; }
+  .woken #excLeftEye,
+  .woken #excRightEye { animation: eyeOpen 0.8s ease-out forwards; }
+  .woken #zz1,
+  .woken #zz2,
+  .woken #zz3 { animation: none; opacity: 0; }
+
+  /* -- ERROR TEXT -- */
+  .error-page .err-code {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 18vw, 130px);
+    line-height: 1;
+    color: var(--gold);
+    letter-spacing: 4px;
+    text-shadow: 0 8px 40px rgba(212,160,23,0.18);
+    margin-bottom: 4px;
+  }
+
+  .error-page .err-subtitle {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(18px, 4vw, 26px);
+    font-weight: 500;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+
+  .error-page .err-joke {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    font-style: italic;
+    color: rgba(212,160,23,0.7);
+    margin-bottom: 14px;
+    letter-spacing: 0.3px;
+  }
+
+  .error-page .err-desc {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.75;
+    color: rgba(245,245,240,0.55);
+    max-width: 440px;
+    margin: 0 auto 36px;
+  }
+
+  .error-page .err-actions {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .error-page .btn-home {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    padding: 13px 32px;
+    border: none;
+    border-radius: 2px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .error-page .btn-home:hover { background: var(--gold-lt); transform: translateY(-1px); }
+  .error-page .btn-home svg   { width: 16px; height: 16px; }
+
+  .error-page .btn-wake {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    background: transparent;
+    padding: 12px 28px;
+    border: 1px solid rgba(212,160,23,0.35);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .error-page .btn-wake:hover { border-color: var(--gold); color: var(--gold-lt); }
+
+  .error-page .hint-text {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: rgba(245,245,240,0.2);
+    margin-top: 28px;
+  }
+
+  @media (max-width: 480px) {
+    .error-page .excavator-wrap { max-width: 320px; }
+  }

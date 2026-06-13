@@ -57,7 +57,7 @@ Options -Indexes
 </IfModule>
 
 # 7. Custom Error Pages
-ErrorDocument 400 /error.php
-ErrorDocument 403 /error.php
-ErrorDocument 404 /error.php
-ErrorDocument 500 /error.php
+ErrorDocument 400 /Erix/error.php
+ErrorDocument 403 /Erix/error.php
+ErrorDocument 404 /Erix/error.php
+ErrorDocument 500 /Erix/error.php
