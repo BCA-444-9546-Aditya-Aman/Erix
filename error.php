@@ -1,5 +1,5 @@
 <?php
-$code = isset($_GET['code']) ? (int)$_GET['code'] : 404;
+$code = isset($_SERVER['REDIRECT_STATUS']) && $_SERVER['REDIRECT_STATUS'] != 200 ? (int)$_SERVER['REDIRECT_STATUS'] : (isset($_GET['code']) ? (int)$_GET['code'] : 404);
 
 switch ($code) {
     case 400:

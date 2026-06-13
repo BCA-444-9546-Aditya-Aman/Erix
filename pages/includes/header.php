@@ -8,7 +8,7 @@
 <?php
 $metaDesc = isset($metaDescription) ? $metaDescription : "Erix Construction - Industry-leading construction and engineering firm specializing in luxury residential, commercial, and structural retrofitting.";
 $metaKeys = isset($metaKeywords) ? $metaKeywords : "construction company, building, luxury residential construction, commercial construction, structural engineering, Erix Construction";
-$ogImg    = isset($ogImage) ? $ogImage : (isset($pathPrefix) ? $pathPrefix : './') . "assets/images/chat_builder.png";
+$ogImg    = isset($ogImage) ? $ogImage : (isset($pathPrefix) ? $pathPrefix : './') . "assets/images/team_member.png";
 ?>
 <meta name="description" content="<?php echo htmlspecialchars($metaDesc); ?>" />
 <meta name="keywords" content="<?php echo htmlspecialchars($metaKeys); ?>" />
